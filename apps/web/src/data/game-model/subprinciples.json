@@ -1,0 +1,4 @@
+[
+  {"id":"cutback_lane","name":"Protect cutback lane","principleId":"cover"},
+  {"id":"angle_body","name":"Angle body to show outside","principleId":"delay"}
+]

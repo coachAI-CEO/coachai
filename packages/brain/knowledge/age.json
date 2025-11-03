@@ -1,0 +1,22 @@
+{
+  "U9": {
+    "sessionLength": 60,
+    "blockLength": 8,
+    "gridSizes": {
+      "technical": "12x12 yd",
+      "possession": "18x18 yd",
+      "finishing": "20x25 yd"
+    },
+    "intensityNotes": "High reps, low decision load. Keep it fun, frequent ball touches."
+  },
+  "U10": {
+    "sessionLength": 75,
+    "blockLength": 10,
+    "gridSizes": {
+      "technical": "14x14 yd",
+      "possession": "20x20 yd",
+      "finishing": "22x30 yd"
+    },
+    "intensityNotes": "Balance reps with simple decisions. Encourage scanning and first touch into space."
+  }
+}

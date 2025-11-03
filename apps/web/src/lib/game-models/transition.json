@@ -1,0 +1,20 @@
+{
+  "id": "TRANSITION",
+  "name": "Fast Transition (Both Ways)",
+  "philosophy": "Exploit moments after gain; protect immediately after loss.",
+  "globalPrinciples": ["first 5 seconds","maximize width on gain","counter-press or drop","快速决策"],
+  "agePolicies": {
+    "U9-U10": "Simple 'react fast' rules.",
+    "U11-U12": "First pass forward or safe switch.",
+    "U13-U14": "Rest defense shape on attack.",
+    "U15-U18": "Triggers for immediate counter-press vs regroup."
+  },
+  "sessionGuidelines": {
+    "warmup": "Reaction races with ball.",
+    "main": "Directional games with instant changeover.",
+    "game": "SSG awarding transition goals."
+  },
+  "prompts": {
+    "planningNotes": "Short, intense bouts; explicit 5s rules."
+  }
+}

@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15
+    container_name: coachai-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: coachai
+      POSTGRES_PASSWORD: coachai
+      POSTGRES_DB: coachai_dev
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

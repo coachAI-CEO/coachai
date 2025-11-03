@@ -1,0 +1,5 @@
+[
+  {"id":"compactness","category":"Defending","description":"Maintain tight horizontal and vertical distances."},
+  {"id":"delay","category":"Defending","description":"Slow the attack to allow recovery and cover."},
+  {"id":"cover","category":"Defending","description":"Second defender protects space/goalside behind pressure."}
+]

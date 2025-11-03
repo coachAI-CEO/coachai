@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CycleType {
+  micro
+  meso
+}
+
+model Club {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  teams     Team[]
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  clubId    String
+  name      String
+  ageBand   String
+  formation String? // e.g., "2-3-1", optional for now
+  createdAt DateTime @default(now())
+  club      Club     @relation(fields: [clubId], references: [id])
+
+  players  Player[]
+  sessions Session[]
+  games    Game[]
+}
+
+model Player {
+  id        String   @id @default(cuid())
+  teamId    String
+  firstName String
+  lastName  String
+  jersey    String?
+  position  String? // simple text for now (GK, CB, etc.)
+  profile   Json? // free-form: strengths, notes
+  createdAt DateTime @default(now())
+
+  team        Team         @relation(fields: [teamId], references: [id])
+  sessionLogs SessionLog[]
+}
+
+model Session {
+  id             String    @id @default(cuid())
+  teamId         String
+  title          String
+  cycleType      CycleType
+  startsAt       DateTime?
+  plan           Json? // structured drills/blocks
+  psych          Json? // mindset cues
+  alignmentScore Int?
+  createdAt      DateTime  @default(now())
+
+  team Team         @relation(fields: [teamId], references: [id])
+  logs SessionLog[]
+}
+
+model SessionLog {
+  id             String   @id @default(cuid())
+  sessionId      String
+  coachId        String? // later link to users
+  execScore      Int? // 0-10
+  retentionScore Int? // 0-10
+  behaviorScore  Int? // 0-10
+  notes          String?
+  createdAt      DateTime @default(now())
+
+  session     Session @relation(fields: [sessionId], references: [id])
+  // optional: per-player flags in JSON until we add a join table
+  playerNotes Json?
+  Player      Player? @relation(fields: [playerId], references: [id])
+  playerId    String?
+}
+
+model Game {
+  id        String   @id @default(cuid())
+  teamId    String
+  opponent  String
+  date      DateTime
+  tags      Json? // e.g., ["pressing_late","buildout_errors"]
+  notes     String?
+  createdAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id])
+}
+// --- Enums for organizing drills ---
+enum Phase {
+  ATTACKING
+  DEFENDING
+  TRANSITION
+}
+
+enum PitchZone {
+  DEFENSIVE_THIRD
+  MIDDLE_THIRD
+  ATTACKING_THIRD
+}
+
+// --- Core Drill model ---
+model Drill {
+  id          String     @id @default(cuid())
+  title       String
+  objective   String
+  phase       Phase
+  zone        PitchZone
+  ageBands    String[]
+  categories  String[]
+  durationMin Int
+  playersMin  Int
+  playersMax  Int
+  equipment   String?
+  setup       String?
+  constraints String?
+  progression String?
+  coachingPts String[]
+  tags        String[]
+  diagram     Json?
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}

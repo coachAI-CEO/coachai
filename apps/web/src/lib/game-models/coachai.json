@@ -1,0 +1,20 @@
+{
+  "id": "COACHAI",
+  "name": "CoachAI Balanced",
+  "philosophy": "Balanced, age-appropriate development across moments of the game.",
+  "globalPrinciples": ["compactness","pressing cues","build-up patience","counter-press"],
+  "agePolicies": {
+    "U9-U10": "Simple cues, lots of games, constrained decisions.",
+    "U11-U12": "Introduce sub-principles and roles.",
+    "U13-U14": "Begin unit-tactical problems.",
+    "U15-U18": "Refinement and scenario specificity."
+  },
+  "sessionGuidelines": {
+    "warmup": "Ball-familiarity + simple decision-making.",
+    "main": "2–3 constrained game blocks aligned to the focus.",
+    "game": "Apply principles in SSG/conditioned game."
+  },
+  "prompts": {
+    "planningNotes": "Favor realism and repetitions. Tie each block to 1–2 clear principles and one psych theme."
+  }
+}

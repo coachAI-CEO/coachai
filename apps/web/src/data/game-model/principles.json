@@ -1,0 +1,6 @@
+[
+  {"id":"compactness","name":"Compactness","phase":"DEFENDING","zone":"DEFENSIVE_THIRD"},
+  {"id":"delay","name":"Delay","phase":"DEFENDING","zone":"DEFENSIVE_THIRD"},
+  {"id":"cover","name":"Cover","phase":"DEFENDING","zone":"DEFENSIVE_THIRD"},
+  {"id":"press","name":"Press","phase":"DEFENDING","zone":"MIDDLE_THIRD"}
+]

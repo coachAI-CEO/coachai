@@ -1,0 +1,7 @@
+{
+  "id": "TRANSITION",
+  "name": "Fast Breaks & Counter-Attacks",
+  "philosophy": "Exploit open space immediately on gain; delay and compact on loss.",
+  "globalPrinciples": ["First pass forward", "Support lanes", "Compact on loss"],
+  "prompts": { "planningNotes": "Faster, vertical drills; immediate compactness cues on turnover." }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "PRESSING",
+  "name": "High Press & Counter-Press",
+  "philosophy": "Win the ball back quickly via coordinated pressing and cover.",
+  "globalPrinciples": ["press trigger cues","cover & balance","force wide","counter-press on loss"],
+  "agePolicies": {
+    "U9-U10": "1st defender angle + force wide. Simple cover.",
+    "U11-U12": "2nd/3rd defender roles, backward pressing.",
+    "U13-U14": "Trap zones, pressing traps.",
+    "U15-U18": "Opposition build-up pattern analysis."
+  },
+  "sessionGuidelines": {
+    "warmup": "Pressing footwork & angles.",
+    "main": "Overload constraints to encourage pressing cues.",
+    "game": "Conditioned SSG with press-score rewards."
+  },
+  "prompts": {
+    "planningNotes": "Emphasize delay vs jump decisions, communication, and rest-defense."
+  }
+}

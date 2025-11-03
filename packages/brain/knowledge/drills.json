@@ -1,0 +1,32 @@
+[
+  {
+    "id": "drill_ball_mastery_1",
+    "title": "Ball Mastery Warm-Up",
+    "category": "technical",
+    "ageGroup": ["U9", "U10", "U11"],
+    "duration": 10,
+    "equipment": ["cones", "balls"],
+    "description": "Players work individually on ball touches: inside-inside, sole rolls, toe taps.",
+    "coachingPoints": [
+      "Stay light on your toes",
+      "Keep the ball close within one step",
+      "Use both feet"
+    ],
+    "progression": "Increase speed or make patterns more complex after 3 minutes."
+  },
+  {
+    "id": "drill_1v1_attacking",
+    "title": "1v1 to Small Goals",
+    "category": "attacking",
+    "ageGroup": ["U10", "U11", "U12"],
+    "duration": 15,
+    "equipment": ["goals", "cones", "balls"],
+    "description": "Players attack and defend in 1v1 duels to small goals in a 10x15 grid.",
+    "coachingPoints": [
+      "Attack with first touch forward",
+      "Use body feints to unbalance defender",
+      "Quick recovery after losing ball"
+    ],
+    "progression": "Add gates for defender recovery runs or 2v1 transitions."
+  }
+]

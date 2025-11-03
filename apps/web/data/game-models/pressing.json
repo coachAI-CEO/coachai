@@ -1,0 +1,7 @@
+{
+  "id": "PRESSING",
+  "name": "High Press & Counter-Press",
+  "philosophy": "Win the ball back early, compress space around the ball, immediate counter-press after loss.",
+  "globalPrinciples": ["High line trigger", "Ball-oriented compactness", "Immediate pressure after loss"],
+  "prompts": { "planningNotes": "Bias selection toward pressing cues, small-sided presses, transition games." }
+}

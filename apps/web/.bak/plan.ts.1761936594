@@ -1,0 +1,60 @@
+import { runAI } from "./providerRouter";
+
+export type PlanInput = {
+  phase: string;
+  zone: string;
+  age: string;
+  goalsAvailable?: number;
+  principles?: string[];
+  psychThemes?: string[];
+};
+
+export async function planSession(input: PlanInput) {
+  const provider = process.env.PLAN_PROVIDER || "OPENROUTER";
+  const model = process.env.PLAN_MODEL || "anthropic/claude-3.5-sonnet";
+
+  const prompt = `
+You are CoachAI, a world-class youth soccer session planner.
+Return STRICT JSON only with keys: { "blocks": [{ "title": string, "durationMin": number, "objective": string }], "rationale": string }.
+
+Context:
+- Phase: ${input.phase}
+- Zone: ${input.zone}
+- Age: ${input.age}
+- Goals Available: ${input.goalsAvailable ?? 0}
+- Principles: ${(input.principles || []).join(", ") || "n/a"}
+- Psych Themes: ${(input.psychThemes || []).join(", ") || "n/a"}
+
+Requirements:
+- 3 to 5 blocks, durations sum 45–75 minutes total.
+- Each block should align to the principles and psych themes.
+- If goalsAvailable=0, avoid finishing; if 1 or 2, incorporate accordingly.
+- Keep titles concise.
+
+Return ONLY valid minified JSON, no commentary.
+`;
+
+  const raw = await runAI({ provider, model, prompt });
+
+  // best-effort JSON extraction
+  const jsonText = (() => {
+    const m = raw.match(/\{[\s\S]*\}$/);
+    return m ? m[0] : raw.trim();
+  })();
+
+  let parsed: any;
+  try {
+    parsed = JSON.parse(jsonText);
+  } catch {
+    throw new Error("AI did not return valid JSON");
+  }
+
+  // quick sanity defaults
+  if (!Array.isArray(parsed.blocks)) {
+    parsed.blocks = [];
+  }
+  if (typeof parsed.rationale !== "string") {
+    parsed.rationale = "";
+  }
+  return parsed;
+}

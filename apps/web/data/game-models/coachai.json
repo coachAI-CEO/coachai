@@ -1,0 +1,7 @@
+{
+  "id": "COACHAI",
+  "name": "CoachAI Balanced Youth Model",
+  "philosophy": "Balanced growth across technique, game IQ, and psych in age-appropriate ways.",
+  "globalPrinciples": ["Age-appropriate constraints", "Technique under pressure", "Psych habits embedded"],
+  "prompts": { "planningNotes": "Blend technical reps, game IQ, and psych emphasis each session." }
+}

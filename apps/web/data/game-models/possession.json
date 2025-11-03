@@ -1,0 +1,7 @@
+{
+  "id": "POSSESSION",
+  "name": "Positional Play & Build-up",
+  "philosophy": "Create superiorities through structure, circulate to unbalance and break lines.",
+  "globalPrinciples": ["Width & depth", "Third-man", "Switch of play"],
+  "prompts": { "planningNotes": "Favor rondos, positional games, and structured build-up patterns." }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "POSSESSION",
+  "name": "Positional Play & Progression",
+  "philosophy": "Use structure and timing to progress and create advantages.",
+  "globalPrinciples": ["width & depth","third-man","switch to weak side","positional triangles"],
+  "agePolicies": {
+    "U9-U10": "Basic spacing, open body shape.",
+    "U11-U12": "Support angles, 3rds language.",
+    "U13-U14": "Line-breaking and third-man.",
+    "U15-U18": "Tempo control & rotations."
+  },
+  "sessionGuidelines": {
+    "warmup": "Rondo/keep-ball with scanning cues.",
+    "main": "Progression constraints (touches, zones).",
+    "game": "Positional SSG with progression KPIs."
+  },
+  "prompts": {
+    "planningNotes": "Reward scanning, pre-orientation, and timed support."
+  }
+}

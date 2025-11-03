@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+
+/* Light theme baseline */
+:root { --background: #f8fafc; --foreground: #0f172a; }
+html, body { height: 100%; }
+body { color: var(--foreground); background-color: var(--background); }
+/* Link defaults */
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* App utilities */
+.card { @apply rounded-2xl bg-white shadow-sm border border-gray-200; }
+.container { @apply mx-auto max-w-5xl px-4; }
+/* Hard-set a clean sans font in case Tailwind preflight isn't active */
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+}
+/* Kill default blue/underline for all link states */
+a, a:visited { color: inherit; text-decoration: none; }

@@ -1,0 +1,1198 @@
+[
+  {
+    "id": "1v1_delay_show_outside_gate",
+    "title": "1v1 Delay & Show Outside to Gate (12x10m)",
+    "objective": "Coach body shape to delay and guide wide before tackling.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "1v1",
+      "delay",
+      "show_outside"
+    ],
+    "durationMin": 12,
+    "playersMin": 4,
+    "playersMax": 8,
+    "equipment": "8 cones, 1 ball per pair",
+    "setup": "Set 12x10m with two 1m gates on end line. Attacker starts central, defender 3m off.",
+    "constraints": "Attacker scores by dribbling through a gate; defender scores by forcing out or delaying 5s.",
+    "progression": "Add recovering teammate after 2s to reward effective delay.",
+    "coachingPts": [
+      "Side",
+      "on stance",
+      "Slow down under control",
+      "Guide to gate",
+      "Time tackle late",
+      "Communicate 'cover' arrival"
+    ],
+    "tags": [
+      "delay",
+      "1v1"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "1v1_wing_channel_delay",
+    "title": "1v1 Wing Channel Delay (15x8m)",
+    "objective": "Teach defenders to delay in wide areas and protect inside lane.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "1v1",
+      "wide",
+      "delay"
+    ],
+    "durationMin": 10,
+    "playersMin": 4,
+    "playersMax": 8,
+    "equipment": "Cones, balls",
+    "setup": "Create 15x8m channel by touchline. Attacker receives facing goal; defender starts 3m away angle inside.",
+    "constraints": "No tackling in first 2s—prioritize delay & show outside.",
+    "progression": "Add mini goal for attacker to finish; defender earns double points if shot is forced from wide angle.",
+    "coachingPts": [
+      "Angle to block inside",
+      "Small steps",
+      "Don’t dive in",
+      "Watch hips",
+      "Recover if beaten"
+    ],
+    "tags": [
+      "wide_defending",
+      "delay"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "1v1_end_zone_block",
+    "title": "1v1 End-Zone Block Near Goal (10x12m)",
+    "objective": "Improve delay and block technique close to goal.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "1v1",
+      "delay",
+      "last_defender"
+    ],
+    "durationMin": 8,
+    "playersMin": 4,
+    "playersMax": 8,
+    "equipment": "Mini goal, cones, balls",
+    "setup": "Mark 2m end zone in front of mini goal. Attacker must enter end zone to finish.",
+    "constraints": "Defender wins by delaying 5s or forcing attacker back out of the box.",
+    "progression": "Add a second recovering defender from the top after 2s.",
+    "coachingPts": [
+      "Stay calm",
+      "Block shot lane",
+      "Show to weaker foot",
+      "Delay then poke",
+      "Regain shape fast"
+    ],
+    "tags": [
+      "last_defender",
+      "delay"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "2v1_press_cover_angle",
+    "title": "2v1 Press with Angled Cover (15x12m)",
+    "objective": "Train first defender to press and second to cover at angle protecting central lane.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "2v1",
+      "cover",
+      "angle"
+    ],
+    "durationMin": 12,
+    "playersMin": 6,
+    "playersMax": 10,
+    "equipment": "Cones, balls",
+    "setup": "15x12m grid. Attacker starts central. D1 presses, D2 3–4m behind and inside.",
+    "constraints": "Only D1 may tackle until D2 calls 'set'.",
+    "progression": "Allow D2 to step to double-team when attacker turns back.",
+    "coachingPts": [
+      "Press from outside",
+      "in",
+      "Cover 3–4m",
+      "Stay compact",
+      "Delay until cue",
+      "Double on back turn"
+    ],
+    "tags": [
+      "cover",
+      "angle"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "2v2_compact_line_hold",
+    "title": "2v2 Compact Line Hold (16x12m)",
+    "objective": "Develop pair compactness, delaying until a mistake appears.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "2v2",
+      "compact",
+      "delay"
+    ],
+    "durationMin": 12,
+    "playersMin": 6,
+    "playersMax": 10,
+    "equipment": "Mini goals, cones, balls",
+    "setup": "16x12m grid with mini goal. D-pair stays within 8m width while shifting.",
+    "constraints": "No slide tackles; must delay first phase.",
+    "progression": "Add a time limit for attackers to shoot to reward good delay.",
+    "coachingPts": [
+      "Travel fast, arrive slow",
+      "Stay 5–7m apart",
+      "Cover inside",
+      "Communicate early",
+      "Step together"
+    ],
+    "tags": [
+      "compact",
+      "delay"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "2v2_wide_channel_double",
+    "title": "2v2 Wide Channel Double-Up (18x8m)",
+    "objective": "Coach delay then double-up in a narrow wide channel.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "2v2",
+      "wide",
+      "cover"
+    ],
+    "durationMin": 10,
+    "playersMin": 6,
+    "playersMax": 10,
+    "equipment": "Cones, balls",
+    "setup": "18x8m wide channel. Ball starts with wide attacker; inside defender provides cover.",
+    "constraints": "First defender cannot tackle for 2s to emphasize delay.",
+    "progression": "Allow cross to a mini goal—defenders score by blocking 3 crosses.",
+    "coachingPts": [
+      "Show outside",
+      "Cover central cut",
+      "Delay then lock",
+      "Track runner",
+      "Clear lines"
+    ],
+    "tags": [
+      "wide_defending",
+      "cover"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "3v2_compact_triangle_block",
+    "title": "3v2 Compact Triangle Block (22x16m)",
+    "objective": "Teach compact triangle defending vs two forwards and a playmaker.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "3v2",
+      "compact",
+      "cover"
+    ],
+    "durationMin": 15,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls, mini goal",
+    "setup": "22x16m box; 3 defenders vs 2 attackers + server who can join on pass.",
+    "constraints": "Defenders must recover to triangle before engaging beyond halfway.",
+    "progression": "Add trailing attacker to stress cover and recovery.",
+    "coachingPts": [
+      "Hold triangle",
+      "Delay forward pass",
+      "Screen lanes",
+      "Cover behind press",
+      "Reset shape after win"
+    ],
+    "tags": [
+      "compact",
+      "triangle"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "3v3_narrow_block_goal_protect",
+    "title": "3v3 Narrow Block to Protect Goal (20x14m)",
+    "objective": "Rehearse narrow shifting and cover to block central shots.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "3v3",
+      "compact",
+      "goal_protection"
+    ],
+    "durationMin": 15,
+    "playersMin": 6,
+    "playersMax": 12,
+    "equipment": "Mini goal, cones",
+    "setup": "20x14m zone in front of goal. 3v3 with touch limit for attackers.",
+    "constraints": "Defenders must keep team width ≤ 12m.",
+    "progression": "Add wide gates to tempt switch then shift together.",
+    "coachingPts": [
+      "Stay narrow",
+      "Track inside runs",
+      "Delay shots",
+      "Cover far side",
+      "Step on poor touch"
+    ],
+    "tags": [
+      "compact",
+      "goal_protection"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "3v3_cutback_zone_defend",
+    "title": "3v3 Defend Cutback Zone (18x12m)",
+    "objective": "Improve cover positions to block low crosses and cutbacks.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "3v3",
+      "cover",
+      "cutback"
+    ],
+    "durationMin": 12,
+    "playersMin": 6,
+    "playersMax": 12,
+    "equipment": "Cones, balls, two mini goals",
+    "setup": "Mark 4m cutback zone by end line. Attacking wide player can enter and cut back.",
+    "constraints": "Defenders score by intercepting 3 cutbacks before a goal.",
+    "progression": "Add weak-side runner to coach far-post cover.",
+    "coachingPts": [
+      "Scan shoulders",
+      "Cover central slot",
+      "Delay crosser",
+      "Block lanes",
+      "Clear first time"
+    ],
+    "tags": [
+      "cutback",
+      "cover"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "4v3_mid_block_hold",
+    "title": "4v3 Mid-Block Hold & Delay (26x18m)",
+    "objective": "Coordinate a compact line of four to delay and screen through balls.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "4v3",
+      "compact",
+      "cover"
+    ],
+    "durationMin": 18,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Half pitch zone, cones, balls",
+    "setup": "26x18m block in defensive third. 4 defenders vs 3 attackers building centrally.",
+    "constraints": "Back four must keep vertical distance to mids ≤ 8m.",
+    "progression": "Add a high 9 to test through-ball screening.",
+    "coachingPts": [
+      "Squeeze lines",
+      "Show wide",
+      "Cover depth",
+      "Delay on switches",
+      "Communicate marks"
+    ],
+    "tags": [
+      "compact",
+      "team_shape"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "4v4_zone_shift",
+    "title": "4v4 Zone Shift & Cover (28x20m)",
+    "objective": "Train coordinated lateral shifts and cover responsibilities in two lines.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "4v4",
+      "compact",
+      "shape"
+    ],
+    "durationMin": 20,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls",
+    "setup": "28x20m grid split into three vertical lanes. 4v4 directional play.",
+    "constraints": "Defenders cannot vacate lane until pass is made to it.",
+    "progression": "After switch, nearest presses, others slide and cover.",
+    "coachingPts": [
+      "Shift early",
+      "Compact around ball",
+      "Protect inside",
+      "Cover weak side",
+      "Reset distances"
+    ],
+    "tags": [
+      "compact",
+      "zone_defense"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "4v4_box_defend_crosses",
+    "title": "4v4 Box Defending vs Crosses (24x18m)",
+    "objective": "Reinforce compact box defending and cover on aerial/low service.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "4v4",
+      "cross_defense",
+      "compact"
+    ],
+    "durationMin": 15,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls, wide servers",
+    "setup": "24x18m box in front of goal; servers from both flanks deliver crosses.",
+    "constraints": "Defenders must stay within 16m width when ball central.",
+    "progression": "Add runner from edge to attack second phase.",
+    "coachingPts": [
+      "Protect goal side",
+      "Mark in zones",
+      "Attack first ball",
+      "Cover second ball",
+      "Clear wide"
+    ],
+    "tags": [
+      "cross_defense",
+      "compact"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "rondo_5v3_trigger_press",
+    "title": "Rondo 5v3 with Triggered Press (16x16m)",
+    "objective": "Teach when to press vs delay using poor-touch and back-to-goal cues.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "rondo",
+      "press",
+      "delay"
+    ],
+    "durationMin": 12,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls",
+    "setup": "16x16m grid, 5v3. Defenders stay compact until a trigger appears.",
+    "constraints": "Only press on clear cue; otherwise stay compact in triangle cover.",
+    "progression": "On regain, play to gates for +1 point.",
+    "coachingPts": [
+      "Read triggers",
+      "Compact triangle",
+      "Cover behind press",
+      "Delay if no cue",
+      "Quick burst to win"
+    ],
+    "tags": [
+      "press",
+      "delay"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "rondo_4v2_cover_only",
+    "title": "Rondo 4v2 Cover-Only Intercepts (12x12m)",
+    "objective": "Develop cover angles and anticipation without tackling.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "rondo",
+      "cover",
+      "anticipation"
+    ],
+    "durationMin": 10,
+    "playersMin": 6,
+    "playersMax": 9,
+    "equipment": "Cones, balls",
+    "setup": "12x12m 4v2. Defenders can only intercept passes—no tackles.",
+    "constraints": "Defenders must remain within 6m of each other.",
+    "progression": "Add third defender to create rotating triangle.",
+    "coachingPts": [
+      "Screen lanes",
+      "Check shoulders",
+      "Angle inside",
+      "Stay connected",
+      "Jump on telegraph"
+    ],
+    "tags": [
+      "rondo",
+      "cover"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "rondo_split_gate_counter",
+    "title": "Rondo Split-Gate Counter (14x14m)",
+    "objective": "Link compact defending to fast counter through gates on regain.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "rondo",
+      "delay",
+      "transition"
+    ],
+    "durationMin": 10,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls, two gates",
+    "setup": "14x14m. 5v3 or 4v2. On regain, defenders must exit via gate within 4s.",
+    "constraints": "Must complete 2 passes before exit to encourage composure.",
+    "progression": "Add chaser to pressure counter timing.",
+    "coachingPts": [
+      "Win then secure",
+      "Compact to win",
+      "First pass safe",
+      "Open body",
+      "Sprint to gate"
+    ],
+    "tags": [
+      "transition",
+      "delay"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "recover_delay_2v1_gate",
+    "title": "Recover & Delay 2v1 to Gate (24x16m)",
+    "objective": "Build recovery speed, angle to delay, and compact cover on arrival.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "transition",
+      "delay",
+      "cover"
+    ],
+    "durationMin": 12,
+    "playersMin": 6,
+    "playersMax": 10,
+    "equipment": "Cones, balls, gate markers",
+    "setup": "24x16m with 2m gate. Ball lost near halfway; attackers break 2v1.",
+    "constraints": "Defender wins if attack delayed ≥6s or forced wide through gate.",
+    "progression": "Add trailing defender after 3s to create 2v2.",
+    "coachingPts": [
+      "Sprint recovery",
+      "Arc run inside",
+      "Hands low, steps small",
+      "Delay shot",
+      "Call cover"
+    ],
+    "tags": [
+      "recovery",
+      "delay"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "recover_triangle_3v2",
+    "title": "Recovery Triangle 3v2 (26x18m)",
+    "objective": "Train two recovering defenders to re-form compact triangle with a holding mid.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "transition",
+      "compact",
+      "cover"
+    ],
+    "durationMin": 15,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls",
+    "setup": "26x18m; 3 attackers vs 2 recovering defenders + late DM arriving.",
+    "constraints": "Attack must shoot within 8s; defenders earn 2 points if triangle formed first.",
+    "progression": "Release DM arrival earlier as players improve.",
+    "coachingPts": [
+      "Form triangle first",
+      "Delay edge of box",
+      "Screen pass",
+      "Cover runner",
+      "Clear danger"
+    ],
+    "tags": [
+      "compact",
+      "transition"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "last_defender_delay_lane",
+    "title": "Last Defender Delay in Central Lane (22x12m)",
+    "objective": "Coach lone defender to delay centrally and protect the goal lane.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "delay",
+      "last_defender",
+      "1v1"
+    ],
+    "durationMin": 10,
+    "playersMin": 4,
+    "playersMax": 8,
+    "equipment": "Cones, balls, mini goal",
+    "setup": "22x12m corridor. Attacker drives at speed; defender retreats shaping inside.",
+    "constraints": "No tackle in first 2s; point for forcing back pass.",
+    "progression": "Add recovering chaser from behind attacker.",
+    "coachingPts": [
+      "Backpedal then side",
+      "on",
+      "Protect middle",
+      "Delay finish",
+      "Tackle late",
+      "Signal cover"
+    ],
+    "tags": [
+      "last_defender",
+      "delay"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "central_box_screen_2v2",
+    "title": "Central Box Screen 2v2 (18x14m)",
+    "objective": "Protect central box by delaying and screening through passes.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "2v2",
+      "central_defending",
+      "delay"
+    ],
+    "durationMin": 12,
+    "playersMin": 6,
+    "playersMax": 10,
+    "equipment": "Cones, balls, mini goals",
+    "setup": "18x14m with a 6x6m 'no-entry' central box for defenders to screen.",
+    "constraints": "Attackers cannot run through box; must pass around to finish.",
+    "progression": "Allow entry after 5 passes to test cover reactions.",
+    "coachingPts": [
+      "Screen first",
+      "Compact narrow",
+      "Delay to gather",
+      "Show wide",
+      "Step on poor touch"
+    ],
+    "tags": [
+      "central_defending",
+      "delay"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "central_gate_protect_3v3",
+    "title": "Central Gate Protect 3v3 (20x15m)",
+    "objective": "Reinforce compactness by guarding central gates and delaying shots.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "3v3",
+      "compact",
+      "delay"
+    ],
+    "durationMin": 15,
+    "playersMin": 6,
+    "playersMax": 12,
+    "equipment": "Cones, two 1m gates, balls",
+    "setup": "20x15m; two central 1m gates 8m from goal. 3v3 directional.",
+    "constraints": "Goals only count if the through pass goes via a gate.",
+    "progression": "Add third gate wide to provoke shifting.",
+    "coachingPts": [
+      "Compact around gates",
+      "Cover behind press",
+      "Delay line",
+      "breaking",
+      "Track runners",
+      "Reset shape"
+    ],
+    "tags": [
+      "compact",
+      "gates"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "central_box_press_cues_4v3",
+    "title": "Central Box Press Cues 4v3 (22x16m)",
+    "objective": "Teach when to press vs delay around a central hot-zone.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "4v3",
+      "press",
+      "compact"
+    ],
+    "durationMin": 15,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls",
+    "setup": "22x16m with 8x6m central hot-zone. 4 defenders vs 3 attackers.",
+    "constraints": "Only press into hot-zone on poor touch/back-to-goal; otherwise screen.",
+    "progression": "Reduce hot-zone size as players improve.",
+    "coachingPts": [
+      "Read cue",
+      "Screen first",
+      "Cover depth",
+      "Delay switches",
+      "Collapse on trigger"
+    ],
+    "tags": [
+      "press",
+      "compact"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "switch_shift_compact_4v4",
+    "title": "Switch & Shift Compact 4v4 (30x20m)",
+    "objective": "Improve lateral compactness and cover against quick switches.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "4v4",
+      "compact",
+      "cover"
+    ],
+    "durationMin": 20,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Half pitch channel, cones",
+    "setup": "30x20m with three lanes. Attackers circulate to switch; defenders slide as a block.",
+    "constraints": "Defensive width must stay ≤ 18m when ball central.",
+    "progression": "Add target wide player to force bigger shifts.",
+    "coachingPts": [
+      "Shift early",
+      "Protect inside",
+      "Cover back post",
+      "Delay entry",
+      "Communicate slide"
+    ],
+    "tags": [
+      "compact",
+      "shift"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "defend_cross_low_high_4v3",
+    "title": "Defend Low & High Crosses 4v3 (24x18m)",
+    "objective": "Coach compact positions to stop cutbacks and crosses.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "4v3",
+      "cross_defense",
+      "cover"
+    ],
+    "durationMin": 15,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls, servers",
+    "setup": "24x18m; flanking servers alternate low/high crosses vs 3 attackers.",
+    "constraints": "Defenders earn 1 pt for first-ball, 1 pt for second-ball clearance.",
+    "progression": "Add late edge runner for rebounds.",
+    "coachingPts": [
+      "Near",
+      "post ready",
+      "Mark zone",
+      "Cover far post",
+      "Win second ball",
+      "Push line out"
+    ],
+    "tags": [
+      "cross_defense",
+      "cover"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "switch_trap_delay_3v3",
+    "title": "Switch Trap & Delay 3v3 (24x16m)",
+    "objective": "Set traps to invite switch then delay while sliding compactly.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "3v3",
+      "compact",
+      "delay"
+    ],
+    "durationMin": 12,
+    "playersMin": 6,
+    "playersMax": 12,
+    "equipment": "Cones, balls",
+    "setup": "24x16m; defenders overload ball side and leave far lane baited.",
+    "constraints": "Points for forcing a switch+delay >4s before entry.",
+    "progression": "Allow diagonal skip pass to test recover.",
+    "coachingPts": [
+      "Bait far side",
+      "Slide fast",
+      "Arrive slow",
+      "Cover middle",
+      "Reset distances"
+    ],
+    "tags": [
+      "compact",
+      "trap"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "drop_block_box_defense",
+    "title": "Drop & Block Box Defense (26x18m)",
+    "objective": "Rehearse dropping together to protect box and delay shots.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "team_shape",
+      "compact",
+      "delay"
+    ],
+    "durationMin": 18,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls, mini goal",
+    "setup": "26x18m in front of goal. Start with ball wide; defenders drop in unison.",
+    "constraints": "Line must stay within 8m vertically to midfield.",
+    "progression": "Add opposite switch then shot scenario.",
+    "coachingPts": [
+      "Drop together",
+      "Compact lane",
+      "Delay edge shots",
+      "Cover cutback",
+      "Step once secure"
+    ],
+    "tags": [
+      "compact",
+      "box_defense"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "protect_cutback_lane_4v4",
+    "title": "Protect Cutback Lane 4v4 (22x16m)",
+    "objective": "Improve recognition and cover of the 'cutback lane' inside the box.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "4v4",
+      "cover",
+      "cutback"
+    ],
+    "durationMin": 15,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls, two mini goals",
+    "setup": "22x16m; wide attacker can drive end line to cut back.",
+    "constraints": "Goals only from cutbacks to central lane.",
+    "progression": "Let weak-side join late to test far-post cover.",
+    "coachingPts": [
+      "Mark goal side",
+      "Screen cutback",
+      "Delay crosser",
+      "Body half",
+      "turned",
+      "Clear central"
+    ],
+    "tags": [
+      "cutback",
+      "cover"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "goal_line_scramble_compact",
+    "title": "Goal-Line Scramble Compactness (16x14m)",
+    "objective": "Build compact reactions under second-ball chaos near goal.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "scramble",
+      "compact",
+      "cover"
+    ],
+    "durationMin": 10,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls",
+    "setup": "16x14m; coach serves rebounds/deflections toward six-yard area.",
+    "constraints": "Defenders must keep ≤ 10m team width.",
+    "progression": "Add call of 'step!' to trigger coordinated push out.",
+    "coachingPts": [
+      "Win first contact",
+      "Cover zones",
+      "Stay narrow",
+      "Delay follow",
+      "up",
+      "Step together"
+    ],
+    "tags": [
+      "scramble",
+      "compact"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "2v3_numbers_down_delay",
+    "title": "2v3 Numbers-Down Delay (24x16m)",
+    "objective": "Coach delaying and compact cover when outnumbered.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "numbers_down",
+      "delay",
+      "cover"
+    ],
+    "durationMin": 12,
+    "playersMin": 6,
+    "playersMax": 10,
+    "equipment": "Cones, balls, mini goal",
+    "setup": "24x16m; attackers have 8s to score; 2 defenders aim to delay and funnel.",
+    "constraints": "No tackles first 2s; points for delays ≥6s.",
+    "progression": "Release a third defender after 3s to re-balance.",
+    "coachingPts": [
+      "Protect middle",
+      "Force wide",
+      "Travel then delay",
+      "Cover runner",
+      "Communicate arrival"
+    ],
+    "tags": [
+      "numbers_down",
+      "delay"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "3v4_low_block_hold",
+    "title": "3v4 Low Block Hold (24x18m)",
+    "objective": "Practice compact low block to deny central penetration.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "low_block",
+      "compact",
+      "cover"
+    ],
+    "durationMin": 15,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls, mini goal",
+    "setup": "24x18m; 3 defenders vs 4 attackers, play starts at top of box.",
+    "constraints": "Defensive width ≤ 14m at all times.",
+    "progression": "Add edge shooter to train stepping to ball.",
+    "coachingPts": [
+      "Stay tight",
+      "Screen 10 space",
+      "Cover depth",
+      "Delay shot",
+      "Step on poor touch"
+    ],
+    "tags": [
+      "low_block",
+      "compact"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "1v2_last_defender_delay",
+    "title": "1v2 Last Defender Delay (22x14m)",
+    "objective": "Train single defender to delay vs two attackers until cover returns.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "last_defender",
+      "delay",
+      "transition"
+    ],
+    "durationMin": 8,
+    "playersMin": 4,
+    "playersMax": 8,
+    "equipment": "Cones, balls",
+    "setup": "22x14m; two attackers break from halfway; defender retreats inside lane.",
+    "constraints": "No tackle first 2s; score if delay ≥6s.",
+    "progression": "Release chaser to create 2v2 after 3s.",
+    "coachingPts": [
+      "Retreat central",
+      "Angle body",
+      "Slow at 3m",
+      "Delay pass",
+      "Signal cover"
+    ],
+    "tags": [
+      "last_defender",
+      "delay"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "width_control_gate_game",
+    "title": "Width-Control Gate Game 3v3 (20x15m)",
+    "objective": "Control team width while delaying to block central gates.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "3v3",
+      "compact",
+      "gates"
+    ],
+    "durationMin": 12,
+    "playersMin": 6,
+    "playersMax": 12,
+    "equipment": "Cones, 2 small gates, balls",
+    "setup": "20x15m with two central gates 5m apart. 3v3 directional.",
+    "constraints": "Defensive team width must stay ≤ 12m when ball central.",
+    "progression": "Add third gate wide to test shifting discipline.",
+    "coachingPts": [
+      "Keep narrow",
+      "Shift on pass",
+      "Cover inside",
+      "Delay break",
+      "Reset quickly"
+    ],
+    "tags": [
+      "compact",
+      "gates"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "depth_control_line_compact",
+    "title": "Depth-Control Line Compact 4v4 (28x18m)",
+    "objective": "Manage vertical distances between lines while delaying progression.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "4v4",
+      "compact",
+      "shape"
+    ],
+    "durationMin": 18,
+    "playersMin": 8,
+    "playersMax": 12,
+    "equipment": "Cones, balls",
+    "setup": "28x18m with a 'line gap' stripe; two lines must stay ≤ 8m apart.",
+    "constraints": "Free kicks restart from stripe to test reset speed.",
+    "progression": "Add target players just beyond stripe.",
+    "coachingPts": [
+      "Squeeze space",
+      "Check gaps",
+      "Cover depth",
+      "Delay until set",
+      "Step together"
+    ],
+    "tags": [
+      "compact",
+      "vertical"
+    ],
+    "diagram": null
+  },
+  {
+    "id": "compact_pivot_screen_3v3",
+    "title": "Compact Pivot Screen 3v3 (20x14m)",
+    "objective": "Screen the pivot pass while delaying and covering runners.",
+    "phase": "DEFENDING",
+    "zone": "DEFENSIVE_THIRD",
+    "ageBands": [
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "categories": [
+      "3v3",
+      "screen",
+      "compact"
+    ],
+    "durationMin": 12,
+    "playersMin": 6,
+    "playersMax": 12,
+    "equipment": "Cones, balls",
+    "setup": "20x14m; one attacker acts as pivot target; defenders screen central lane.",
+    "constraints": "Attacking goals only count via pivot combination.",
+    "progression": "Allow pivot to float to new pocket to force shifting.",
+    "coachingPts": [
+      "Front foot screens",
+      "Body half",
+      "open",
+      "Cover back",
+      "Delay wall pass",
+      "Track 3rd man"
+    ],
+    "tags": [
+      "screen",
+      "compact"
+    ],
+    "diagram": null
+  }
+]

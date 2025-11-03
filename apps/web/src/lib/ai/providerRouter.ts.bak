@@ -1,0 +1,88 @@
+import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+/**
+ * Unified runner for model providers.
+ * Supported:
+ *  - OPENAI   (uses process.env.OPENAI_API_KEY)
+ *  - GEMINI   (uses process.env.GEMINI_API_KEY, model via GEMINI_MODEL or default)
+ *  - OPENROUTER (uses process.env.OPENROUTER_API_KEY, model via PLAN_MODEL)
+ */
+export async function runAI(provider: string, prompt: string, model?: string): Promise<string> {
+  if (!prompt || !prompt.trim()) throw new Error("No prompt provided");
+
+  // ---------------------------
+  // OpenAI (optional fallback)
+  // ---------------------------
+  if (provider === "OPENAI") {
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+    const res = await client.chat.completions.create({
+      model: model || "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7,
+    });
+    return res.choices[0]?.message?.content || "";
+  }
+
+  // ---------------------------
+  // Gemini (MakerSuite / Google AI Studio)
+  // ---------------------------
+  if (provider === "GEMINI") {
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) throw new Error("Missing GEMINI_API_KEY");
+    const genAI = new GoogleGenerativeAI(key);
+    const geminiModel = (model || process.env.GEMINI_MODEL || "models/gemini-2.5-flash").replace(/^models\//, "");
+    const m = genAI.getGenerativeModel({ model: geminiModel });
+    const resp = await m.generateContent(prompt);
+    const text = resp.response?.text();
+    if (!text) throw new Error("Empty response from Gemini");
+    return text;
+  }
+
+  // ---------------------------
+  // OpenRouter (Claude via OpenRouter)
+  // ---------------------------
+  if (provider === "OPENROUTER") {
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) throw new Error("Missing OPENROUTER_API_KEY");
+
+    const base = process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1";
+    const planModel = model || process.env.PLAN_MODEL || "anthropic/claude-3.5-sonnet";
+
+    // Required headers by OpenRouter
+    const headers: Record<string, string> = {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": process.env.OPENROUTER_HTTP_REFERER || "http://localhost:3000",
+      "X-Title": process.env.OPENROUTER_APP_TITLE || "CoachAI",
+    };
+
+    const payload = {
+      model: planModel,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.4,
+    };
+
+    const res = await fetch(`${base}/chat/completions`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const errTxt = await res.text().catch(() => "");
+      throw new Error(`OpenRouter error ${res.status}: ${errTxt || res.statusText}`);
+    }
+
+    const data = await res.json();
+    // OpenRouter uses OpenAI-compatible shape
+    const text =
+      data?.choices?.[0]?.message?.content ??
+      data?.choices?.[0]?.text ??
+      "";
+    if (!text) throw new Error("OpenRouter empty response");
+    return text;
+  }
+
+  throw new Error(`Unsupported provider: ${provider}`);
+}
