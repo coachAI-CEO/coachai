@@ -17,26 +17,24 @@ export async function POST(req: Request) {
     model
   } = body || {};
 
-  if (!phase || !zone || !age) {
+  if (!phase || !zone || !age || !totalDurationMin) {
     return NextResponse.json(
-      { error: "Missing required fields: phase, zone, age" },
+      { error: "Missing required fields: phase, zone, age, totalDurationMin" },
       { status: 400 }
     );
   }
 
-  const minutes = Number(totalDurationMin) > 0 ? Number(totalDurationMin) : 60;
-
   try {
-    const result = await generatePlan({
+    const plan = await generatePlan({
       phase, zone, age,
       goalsAvailable,
       principles,
       psychThemes,
-      totalDurationMin: minutes,
-      model
+      model,
+      totalDurationMin: Number(totalDurationMin)
     });
-    // In dev, we may include raw for debugging
-    return NextResponse.json(result);
+    // ⬇️ Always wrap as { plan }
+    return NextResponse.json({ plan });
   } catch (err: any) {
     return NextResponse.json(
       { error: err?.message || "Failed to generate plan" },
