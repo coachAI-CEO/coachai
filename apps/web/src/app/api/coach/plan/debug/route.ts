@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { generatePlan } from "@/lib/ai/drillPlan";
+
 export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const plan = await generatePlan({
@@ -10,8 +12,8 @@ export async function GET() {
       model: "COACHAI",
       totalDurationMin: 90,
     });
-    return NextResponse.json({ ok: true, plan });
-  } catch (e:any) {
+    return NextResponse.json({ ok: true, plan }, { status: 200 });
+  } catch (e: any) {
     return NextResponse.json({
       ok: false,
       name: e?.name,

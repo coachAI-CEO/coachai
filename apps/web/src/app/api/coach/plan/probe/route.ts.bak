@@ -1,0 +1,61 @@
+import { NextResponse } from "next/server";
+import { loadGameModel } from "@/lib/game-models";
+import { generatePromptForPlan } from "@/lib/ai/prompts";
+import { runPlanAI } from "@/lib/ai/providerRouter";
+import { parsePlanJson } from "@/lib/ai/parsePlan";
+import { normalizePlan } from "@/lib/ai/normalizePlan";
+import { RICH_PLAN_FORMAT_HINT } from "@/lib/ai/rich-format-hint";
+
+export const dynamic = "force-dynamic";
+
+export async function GET() {
+  const input = {
+    phase: "DEFENDING",
+    zone: "DEFENSIVE_THIRD",
+    age: "U10",
+    model: "COACHAI",
+    totalDurationMin: 90,
+  };
+
+  const diag: any = { step: "start" };
+
+  try {
+    diag.step = "loadGameModel";
+    const gm = await loadGameModel(input.model || "COACHAI");
+    diag.modelName = gm.name;
+
+    diag.step = "generatePromptForPlan";
+    const modelContext = {
+      id: gm.id,
+      name: gm.name,
+      philosophy: gm.philosophy,
+      globalPrinciples: gm.globalPrinciples,
+      agePolicies: gm.agePolicies,
+      sessionGuidelines: gm.sessionGuidelines,
+      planningNotes: gm.prompts?.planningNotes,
+    };
+
+    let prompt = generatePromptForPlan({ ...input, modelContext });
+    prompt += "\n" + RICH_PLAN_FORMAT_HINT;
+    diag.promptSnippet = prompt.slice(0, 200);
+
+    diag.step = "runPlanAI";
+    const text = await runPlanAI(prompt);
+    diag.textSnippet = (text || "").slice(0, 200);
+
+    diag.step = "parsePlanJson";
+    const raw = parsePlanJson(text);
+    diag.rawKeys = Object.keys(raw || {});
+
+    diag.step = "normalizePlan";
+    const canonical = normalizePlan(raw, input.totalDurationMin, text);
+    diag.ok = true;
+    return NextResponse.json({ ok: true, diag, plan: canonical });
+  } catch (e: any) {
+    diag.ok = false;
+    diag.errorName = e?.name;
+    diag.errorMessage = e?.message;
+    diag.errorStack = e?.stack;
+    return NextResponse.json({ ok: false, diag }, { status: 500 });
+  }
+}

@@ -1,80 +1,148 @@
-export function generatePromptForDrill(input: {
-  phase: string; zone: string; age: string;
-  goalsAvailable?: number; search?: string;
-}) {
-  const search = input.search ? `Focus on: ${input.search}.` : "";
-  return `You are CoachAI. Produce a single soccer training drill as strict JSON.
-Fields:
-id,title,objective,phase,zone,ageBands[],categories[],durationMin,playersMin,playersMax,
-equipment,setup,constraints,progression,coachingPts[],tags[],diagram,nullable gkFocus,
-goalsAvailable,needGKFocus.
+type ModelContext = {
+  id: string;
+  name: string;
+  philosophy?: string;
+  globalPrinciples?: string[];
+  agePolicies?: any;
+  sessionGuidelines?: any;
+  planningNotes?: string;
+};
 
-Constraints:
-- Age must include "${input.age}" in ageBands.
-- Phase="${input.phase}", Zone="${input.zone}", Goals=${input.goalsAvailable ?? 0}
-- ${search}
-Return ONLY JSON.`;
-}
+const asArray = (v: any): string[] =>
+  Array.isArray(v) ? v : (v == null ? [] : [String(v)]);
 
+const safeJoin = (v: any, sep = ", "): string =>
+  asArray(v).filter(Boolean).join(sep);
+
+const safe = (v: any, fallback = ""): string =>
+  typeof v === "string" ? v : fallback;
+
+/**
+ * Build the system prompt for FULL SESSION plan generation.
+ * generatePlan() calls this with { ...input, modelContext }.
+ */
 export function generatePromptForPlan(input: {
-  phase: string; zone: string; age: string;
-  goalsAvailable: number;
-  principles: string[];
-  psychThemes: string[];
-  totalDurationMin: number;
-}) {
-  return `You are CoachAI. Create a session PLAN as strict JSON ONLY.
+  phase: string;
+  zone: string;
+  age: string;
+  goalsAvailable?: number;
+  principles?: string[];
+  psychThemes?: string[];
+  modelContext?: ModelContext;
+  totalDurationMin?: number;
+}): string {
+  const {
+    phase,
+    zone,
+    age,
+    goalsAvailable,
+    principles = [],
+    psychThemes = [],
+    modelContext,
+    totalDurationMin,
+  } = input;
 
-JSON schema:
-{
-  "rationale": string,
-  "totalDurationMin": number,
-  "segments": [
-    {
+  const mc = modelContext ?? ({} as ModelContext);
+
+  return [
+    `You are CoachAI. Create a complete, youth-friendly training session as structured JSON.`,
+    ``,
+    `Context`,
+    `- Phase: ${safe(phase)}`,
+    `- Zone: ${safe(zone)}`,
+    `- Age: ${safe(age)}`,
+    `- Goals available: ${Number.isFinite(goalsAvailable) ? goalsAvailable : "unknown"}`,
+    `- Target principles: ${safeJoin(principles) || "none specified"}`,
+    `- Psych themes: ${safeJoin(psychThemes) || "none specified"}`,
+    ``,
+    `Game Model`,
+    `- ID: ${safe(mc.id)}`,
+    `- Name: ${safe(mc.name)}`,
+    `- Philosophy: ${safe(mc.philosophy, "n/a")}`,
+    `- Global principles: ${safeJoin(mc.globalPrinciples) || "n/a"}`,
+    `- Notes: ${safe(mc.planningNotes, "n/a")}`,
+    ``,
+    `Constraints`,
+    `- Session total duration (minutes) if provided: ${Number.isFinite(totalDurationMin) ? totalDurationMin : "unspecified"}`,
+    ``,
+    `Return ONLY JSON with keys:`,
+    `{
+      "summary": string,
+      "rationale": string,
+      "totalDurationMin": number,
+      "segments": [
+        {
+          "title": string,
+          "durationMin": number,
+          "principleIds": string[] | null,
+          "psychThemeIds": string[] | null,
+          "drill": {
+            "title": string,
+            "objective": string,
+            "organization": string | null,
+            "setup": string | null,
+            "equipment": string[] | null,
+            "constraints": string[] | null,
+            "progression": string[] | null,
+            "coachingPoints": string[] | null,
+            "technicalFocus": string[] | null,
+            "psychFocus": string[] | null,
+            "modelInfluence": {
+              "modelName": string | null,
+              "principlesApplied": string[] | null,
+              "tacticalCues": string[] | null,
+              "unitFocus": string | null,
+              "intensityProfile": string | null,
+              "scoringBias": string | null,
+              "constraintsToApply": string[] | null,
+              "coachingLanguage": string[] | null
+            } | null
+          } | null
+        }
+      ]
+    }`,
+    ``,
+    `- Ensure JSON is valid and parseable.`,
+    `- Ensure totalDurationMin approximates ${Number.isFinite(totalDurationMin) ? totalDurationMin : "the requested duration"} and segments sum reasonably.`,
+  ].join("\n");
+}
+
+/**
+ * Build a prompt for SINGLE DRILL generation (used by /api/ai/drill-drill, if needed).
+ */
+export function generatePromptForDrill(input: {
+  phase: string;
+  zone: string;
+  age: string;
+  model?: string;
+  goalsAvailable?: number;
+  keywords?: string[];
+}): string {
+  const { phase, zone, age, model, goalsAvailable, keywords = [] } = input;
+
+  return [
+    `You are CoachAI. Create ONE drill as JSON.`,
+    ``,
+    `Context`,
+    `- Phase: ${safe(phase)}`,
+    `- Zone: ${safe(zone)}`,
+    `- Age: ${safe(age)}`,
+    `- Goals available: ${Number.isFinite(goalsAvailable) ? goalsAvailable : "unknown"}`,
+    `- Model: ${safe(model, "n/a")}`,
+    `- Keywords: ${safeJoin(keywords) || "none"}`,
+    ``,
+    `Return ONLY JSON with keys:`,
+    `{
       "title": string,
-      "durationMin": number,
-      "drill"?: { "id": string, "title": string, "objective"?: string },
-      "principleIds"?: string[],
-      "psychThemeIds"?: string[]
-    }
-  ]
-}
-
-Requirements:
-- Phase="${input.phase}", Zone="${input.zone}", Age="${input.age}", Goals=${input.goalsAvailable}
-- Target duration=${input.totalDurationMin} minutes (segments must sum to this total).
-- Emphasize principles: ${input.principles.join(", ")}.
-- Weave psych themes: ${input.psychThemes.join(", ")}.
-- Prefer 3–5 segments; include a warm-up and a game-like block.
-- Keep JSON compact; no markdown fences; no commentary.`;
-}
-
-export function generatePromptForReflection(input: {
-  session: import("@/types/session").SessionPlan
-}) {
-  const s = input.session;
-  const segs = s.segments
-    .map((x, i) => ` ${i + 1}. ${x.title} — ${x.durationMin}m${x.drill?.objective ? ` — ${x.drill.objective}` : ""}`)
-    .join("\n");
-
-  return `
-You are a youth soccer coaching analyst. Create a concise, actionable post-session reflection in JSON ONLY, matching this schema:
-{
-  "summary": "string (3-5 sentences)",
-  "whatWentWell": ["bullet", "..."],
-  "toImproveNext": ["bullet", "..."],
-  "focusForNextSession": ["1-3 bullets"],
-  "psychNotes": ["optional bullets"]
-}
-Context:
-- Age: ${s.age}
-- Phase/Zone: ${s.phase} / ${s.zone}
-- Total duration: ${s.totalDurationMin} minutes
-- Principles: ${(s.principleIds || []).join(", ") || "n/a"}
-- Psych themes: ${(s.psychThemeIds || []).join(", ") || "n/a"}
-- Segments:
-${segs}
-
-Return ONLY valid JSON with the exact keys above.
-`;
+      "objective": string,
+      "organization": string | null,
+      "setup": string | null,
+      "equipment": string[] | null,
+      "constraints": string[] | null,
+      "progression": string[] | null,
+      "coachingPoints": string[] | null,
+      "technicalFocus": string[] | null,
+      "psychFocus": string[] | null
+    }`,
+  ].join("\n");
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generatePlan } from "@/lib/ai/generatePlan";
+import { generatePlan } from "@/lib/ai/drillPlan";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       totalDurationMin: Number(totalDurationMin)
     });
     // ⬇️ Always wrap as { plan }
-    return NextResponse.json({ plan });
+    return NextResponse.json(plan);
   } catch (err: any) {
     return NextResponse.json(
       { error: err?.message || "Failed to generate plan" },

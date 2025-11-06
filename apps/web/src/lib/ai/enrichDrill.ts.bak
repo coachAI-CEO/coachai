@@ -1,0 +1,86 @@
+export type Drill = {
+  title?: string;
+  objective?: string;
+  setup?: string;
+  equipment?: string[];
+  coachingPoints?: string[];
+  organization?: string | null;
+  constraints?: string[] | null;
+  progression?: string | null;
+  technicalFocus?: string[];
+  psychFocus?: string[];
+};
+
+type Ctx = {
+  phase: string;
+  zone: string;
+  age: string;
+  modelName: string;
+};
+
+function defaultArea(ctx: Ctx) {
+  // simple area defaults per age; tweak later
+  const m = String(ctx.age || "").toUpperCase();
+  if (m.startsWith("U9") || m.startsWith("U10")) return "20x20 yards";
+  if (m.startsWith("U11") || m.startsWith("U12")) return "25x30 yards";
+  return "30x40 yards";
+}
+
+export async function enrichDrill(d: Drill, ctx: Ctx): Promise<Drill> {
+  const out: Drill = { ...d };
+
+  // Ensure arrays
+  out.equipment = Array.isArray(out.equipment) ? out.equipment : [];
+  out.coachingPoints = Array.isArray(out.coachingPoints) ? out.coachingPoints : [];
+  out.technicalFocus = Array.isArray(out.technicalFocus) ? out.technicalFocus : [];
+  out.psychFocus = Array.isArray(out.psychFocus) ? out.psychFocus : [];
+
+  const isWarmUp = /warm[- ]?up|dynamic/i.test(out.title || "");
+
+  // --- ORGANISATION (always fill if missing, including warm-ups)
+  if (!out.organization) {
+    const area = defaultArea(ctx);
+    const title = out.title || "Focused practice";
+    const setup = out.setup ? ` ${String(out.setup).trim()}` : "";
+    out.organization =
+`Organisation
+Area: ${area}. Context: ${ctx.phase} in the ${ctx.zone.toLowerCase()} for ${ctx.age}.
+Practice: ${title}.${setup ? " " + setup : ""}
+Flow:
+1) Players rotate through stations performing dynamic tasks (include ball where possible).
+2) Coach gives visual/audio cues; players react, adjust body shape, and communicate.
+3) Add transitions (e.g., sprint to cone, recover, receive/pass) to mimic game intensity.`;
+  }
+
+  // --- PROGRESSION (always provide a basic path if missing)
+  if (!out.progression) {
+    out.progression =
+`Progression
+1) Increase time under pressure or add a defender/constraint (e.g., 2-touch).
+2) Add directional objective (carry or pass to target mini-goal).
+3) Link to main theme: introduce "press / cover / compact" cue before each rep.`;
+  }
+
+  // --- COACHING POINTS (ensure a helpful set)
+  const core = [
+    "Angle body to show wide; don’t dive in.",
+    "Nearest presses; second covers; rest stay compact.",
+    "Delay first, then tackle; time buys teammates.",
+    "Constant communication: 'Press', 'Cover', 'Hold'."
+  ];
+  for (const cp of core) if (!out.coachingPoints.includes(cp)) out.coachingPoints.push(cp);
+
+  // --- TECH/PSYCH FOCI (baseline)
+  if (out.technicalFocus.length === 0) {
+    out.technicalFocus.push("defensive shape", "closing angles", "recovery runs");
+  }
+  if (out.psychFocus.length === 0) {
+    out.psychFocus.push("communication", "resilience");
+  }
+
+  // --- EQUIPMENT baseline
+  const needed = ["cones", "balls", ...(isWarmUp ? [] : ["bibs"])];
+  for (const item of needed) if (!out.equipment.includes(item)) out.equipment.push(item);
+
+  return out;
+}

@@ -40,28 +40,7 @@ export async function generatePlan(input: {
   const rawObj = parsePlanJson(text);
   const canonical = normalizePlan(rawObj, input.totalDurationMin, text);
 
-  
-  if (Array.isArray(canonical.segments)) {
-    for (const seg of canonical.segments) {
-      if (seg && seg.drill) {
-        const needs = !seg.drill.modelInfluence;
-        if (needs) {
-          seg.drill = await enrichDrill(seg.drill, {
-            phase: input.phase,
-            zone: input.zone,
-            age: input.age,
-            model: {
-              id: gm.id,
-              name: gm.name,
-              philosophy: gm.philosophy,
-              principles: gm.globalPrinciples
-            }
-          });
-        }
-      }
-    }
-  }
-// --- Enrich drills if missing organization/progression
+  // --- Enrich drills if missing organization/progression
   if (Array.isArray(canonical.segments)) {
     for (const seg of canonical.segments) {
       if (seg && seg.drill) {
@@ -76,12 +55,7 @@ export async function generatePlan(input: {
             phase: input.phase,
             zone: input.zone,
             age: input.age,
-            model: {
-              id: gm.id,
-              name: gm.name,
-              philosophy: gm.philosophy,
-              principles: gm.globalPrinciples
-            }
+            modelName: gm.name,
           });
         }
       }
@@ -115,34 +89,6 @@ export async function generatePlan(input: {
       organization: seg.drill.organization ?? null,
       progression: seg.drill.progression ?? null,
     };
-  }
-
-    // --- Ensure modelInfluence exists for all drills
-  if (Array.isArray(canonical.segments)) {
-    for (const seg of canonical.segments) {
-      const d = seg && seg.drill;
-      if (!d) continue;
-      if (!d.modelInfluence) {
-        d.modelInfluence = {
-          modelName: gm.name,
-          principlesApplied: ["compactness","delay","cover"],
-          tacticalCues: [
-            "Nearest presses, second covers, third balances",
-            "Show outside when possible",
-            "Recover behind the ball on loss",
-          ],
-          unitFocus: (String(input.zone||"").includes("DEFENSIVE") ? "Back line + DM" : "Unit"),
-          intensityProfile: "moderate",
-          scoringBias: "Defensive success: force wide, block, regain",
-          constraintsToApply: [
-            "Touch limit for attackers",
-            "Bonus if defending team forces play wide",
-            "Regain within 6s = extra point",
-          ],
-          coachingLanguage: ["Delay","Cover","Compact","Show wide"],
-        };
-      }
-    }
   }
 
   return canonical;

@@ -1,0 +1,154 @@
+"use client";
+import { useState } from "react";
+
+type Drill = {
+  title: string;
+  objective: string;
+  organization?: string;
+  coachingPoints?: string[];
+  progression?: string[];
+  tags?: string[];
+  phase?: string;
+  zone?: string;
+  age?: string;
+  goalsAvailable?: number;
+  gameModel?: string;
+};
+
+export default function DrillGeneratorPage() {
+  const [phase, setPhase] = useState("ATTACKING");
+  const [zone, setZone] = useState("ATTACKING_THIRD");
+  const [age, setAge] = useState("U12");
+  const [goals, setGoals] = useState(1);
+  const [keywords, setKeywords] = useState("compact, delay");
+  const [drill, setDrill] = useState<Drill | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function generate() {
+    setLoading(true);
+    setDrill(null);
+    try {
+      const res = await fetch("/api/ai/drill-drill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phase,
+          zone,
+          age,
+          goalsAvailable: Number(goals),
+          keywords: keywords.split(",").map(s => s.trim()).filter(Boolean),
+          model: "COACHAI"
+        })
+      });
+      const data = await res.json();
+      // Support both {drill} and drill directly
+      const out = data?.drill ?? data;
+      setDrill(out as Drill);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="max-w-3xl mx-auto p-6">
+      <h1 className="text-2xl font-bold">Generate Drill (AI)</h1>
+
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label className="block">
+          <div className="text-sm font-medium mb-1">Phase</div>
+          <select className="w-full border rounded-lg p-2" value={phase} onChange={e=>setPhase(e.target.value)}>
+            <option>ATTACKING</option>
+            <option>DEFENDING</option>
+            <option>TRANSITION</option>
+          </select>
+        </label>
+
+        <label className="block">
+          <div className="text-sm font-medium mb-1">Zone</div>
+          <select className="w-full border rounded-lg p-2" value={zone} onChange={e=>setZone(e.target.value)}>
+            <option>DEFENSIVE_THIRD</option>
+            <option>MIDDLE_THIRD</option>
+            <option>ATTACKING_THIRD</option>
+          </select>
+        </label>
+
+        <label className="block">
+          <div className="text-sm font-medium mb-1">Age</div>
+          <input className="w-full border rounded-lg p-2" value={age} onChange={e=>setAge(e.target.value)} />
+        </label>
+
+        <label className="block">
+          <div className="text-sm font-medium mb-1">Goals Available (0–2)</div>
+          <input type="number" min={0} max={2} className="w-full border rounded-lg p-2" value={goals} onChange={e=>setGoals(Number(e.target.value))} />
+        </label>
+
+        <label className="md:col-span-2 block">
+          <div className="text-sm font-medium mb-1">Keywords (e.g., “compact, delay”)</div>
+          <input className="w-full border rounded-lg p-2" value={keywords} onChange={e=>setKeywords(e.target.value)} />
+        </label>
+      </div>
+
+      <button
+        onClick={generate}
+        disabled={loading}
+        className="mt-4 px-4 py-2 rounded-lg bg-black text-white disabled:opacity-50"
+      >
+        {loading ? "Generating…" : "Generate Drill"}
+      </button>
+
+      {drill && (
+        <article className="mt-6 border rounded-xl p-4">
+          <h2 className="text-xl font-semibold">{drill.title}</h2>
+
+          {drill.objective && (
+            <p className="mt-2 text-gray-700">{drill.objective}</p>
+          )}
+
+          <div className="mt-3 text-sm text-gray-600">
+            Phase: <strong>{drill.phase}</strong> · Zone: <strong>{drill.zone}</strong> · Age: <strong>{drill.age}</strong> · Goals available: <strong>{drill.goalsAvailable}</strong>
+          </div>
+
+          {Array.isArray(drill.tags) && drill.tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {drill.tags.map((t, i) => (
+                <span key={i} className="px-2 py-1 text-xs rounded-full bg-gray-100 border">{t}</span>
+              ))}
+            </div>
+          )}
+
+          {drill.organization && (
+            <section className="mt-5">
+              <h3 className="font-semibold">Organization</h3>
+              <p className="text-gray-700 whitespace-pre-line">{drill.organization}</p>
+            </section>
+          )}
+
+          {Array.isArray(drill.coachingPoints) && drill.coachingPoints.length > 0 && (
+            <section className="mt-5">
+              <h3 className="font-semibold">Key Coaching Points</h3>
+              <ul className="list-disc ml-5">
+                {drill.coachingPoints.map((p, i) => <li key={i}>{p}</li>)}
+              </ul>
+            </section>
+          )}
+
+          {Array.isArray(drill.progression) && drill.progression.length > 0 && (
+            <section className="mt-5">
+              <h3 className="font-semibold">Progressions</h3>
+              <ul className="list-disc ml-5">
+                {drill.progression.map((p, i) => <li key={i}>{p}</li>)}
+              </ul>
+            </section>
+          )}
+
+          {drill.gameModel && (
+            <section className="mt-5">
+              <h3 className="font-semibold">Game Model Link</h3>
+              <p className="text-gray-700">{drill.gameModel}</p>
+            </section>
+          )}
+        </article>
+      )}
+    </main>
+  );
+}

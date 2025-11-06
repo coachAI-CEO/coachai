@@ -1,83 +1,65 @@
-import { runAI } from "./providerRouter";
-import { ensureGKFocus, DrillSchema } from "./schema";
+import { parseDrillJson } from "./parseDrill";
+import { loadGameModel } from "@/lib/game-models";
+import { runPlanAI as runDrillAI } from "./providerRouter";
 
-export async function generateDrill(intent: {
+export async function generateDrill(input: {
   phase: string;
   zone: string;
   age: string;
-  search?: string;
   goalsAvailable?: number;
+  keywords?: string[];
+  model?: "POSSESSION" | "PRESSING" | "TRANSITION" | "COACHAI";
 }) {
-  const provider = process.env.PROVIDER || "GEMINI";
+  const gm = await loadGameModel(input.model || "COACHAI");
 
-  // 1️⃣ Construct the AI prompt
   const prompt = `
-You are CoachAI, an expert youth soccer drill creator.
-Generate ONE JSON drill only — do not include commentary or markdown.
-Format your response exactly as JSON matching this schema:
+You are CoachAI, an elite UEFA A-licensed technical coach.
+Return a SINGLE JSON object only. NO prose, NO markdown.
+
+REQUIRED SHAPE:
 {
-  "id": string,
   "title": string,
   "objective": string,
-  "phase": "DEFENDING" | "ATTACKING" | "TRANSITION",
-  "zone": "DEFENSIVE_THIRD" | "MIDDLE_THIRD" | "ATTACKING_THIRD",
-  "ageBands": string[],
-  "categories": string[],
-  "durationMin": number,
-  "playersMin": number,
-  "playersMax": number,
-  "equipment": string,
-  "setup": string,
-  "constraints": string,
-  "progression": string,
-  "coachingPts": string[],
-  "tags": string[],
-  "diagram": null,
+  "organization": string,     // 3–6 sentences: field size, zones, player roles, rotations, triggers, flow
+  "setup": string,            // concise one-liner
+  "constraints": string,      // special rules
+  "progression": string[],    // 2–4 steps
+  "equipment": string[],      // items
+  "coachingPoints": string[], // 4–8 bullets
+  "phase": string, "zone": string, "age": string,
   "goalsAvailable": number,
-  "needGKFocus": boolean,
-  "gkFocus": string
+  "tags": string[],
+  "gameModel": string
 }
 
-Context:
-Phase: ${intent.phase}
-Zone: ${intent.zone}
-Age group: ${intent.age}
-Keywords: ${intent.search || "none"}
-Goals available: ${intent.goalsAvailable || 0}
+CONTEXT
+Game Model: ${gm.name}
+Philosophy: ${gm.philosophy ?? ""}
 
-Be concise and realistic for ${intent.age} players.
+INPUT
+Phase: ${input.phase}
+Zone: ${input.zone}
+Age: ${input.age}
+Goals available: ${input.goalsAvailable ?? 0}
+Keywords: ${(input.keywords || []).join(", ")}
+
+STYLE
+- Use clear coaching language.
+- The "organization" must be a rich narrative (3–6 sentences).
 `;
 
-  // 2️⃣ Call the chosen AI provider
-  const json = await runAI(provider, prompt);
+  const text = await runDrillAI(prompt);
+  const drill = parseDrillJson(text);
 
-  // 3️⃣ Parse and clean JSON
-  let raw: any;
-  try {
-    const cleaned = json
-      .trim()
-      .replace(/^```json/i, "")
-      .replace(/```$/, "")
-      .trim();
+  // Fill guaranteed fields from input / model when missing
+  drill.phase = drill.phase || input.phase;
+  drill.zone  = drill.zone  || input.zone;
+  drill.age   = drill.age   || input.age;
+  drill.goalsAvailable = drill.goalsAvailable ?? (input.goalsAvailable ?? 0);
+  drill.gameModel = drill.gameModel || `${gm.name} – ${input.phase} in ${input.zone.replace(/_/g," ").toLowerCase()}`;
 
-    const match = cleaned.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("No JSON object found in AI response");
+  // Safety fallback for organization
+  drill.organization = drill.organization || "Set up a marked area with clear roles and rotations. Emphasize timing, compactness, and decision-making under the session objective.";
 
-    raw = JSON.parse(match[0]);
-  } catch (e) {
-    console.error("⚠️ JSON parse error from AI:", e, json);
-    throw new Error("AI did not return valid JSON");
-  }
-
-  // 4️⃣ Validate and enrich with schema + GK logic
-  const validated = ensureGKFocus(DrillSchema.parse(raw));
-
-  if (!validated.ageBands?.length) validated.ageBands = [intent.age];
-  if (!validated.goalsAvailable && intent.goalsAvailable)
-    validated.goalsAvailable = intent.goalsAvailable;
-
-  validated.createdAt = new Date().toISOString();
-  validated.updatedAt = new Date().toISOString();
-
-  return validated;
+  return drill;
 }

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { buildBase } from "@/app/lib/getBase";
-import { ExportSessionButton } from "@/components/ExportSessionButton";
 
 type ParamsP = Promise<{ id: string }>;
 type ParamsS = { id: string };
@@ -68,12 +67,8 @@ export default async function VaultDetailPage(props: Props) {
       <header>
         <h1 className="text-2xl font-bold mt-2">{s.title}</h1>
         <p className="text-gray-600 mt-1">
-  {s.age} • {s.phase} • {s.zone} • {s.totalDurationMin}m
-</p>
-
-<div className="mt-3">
-  <ExportSessionButton id={s.id ?? id} />
-</div>
+          {s.age} • {s.phase} • {s.zone} • {s.totalDurationMin}m
+        </p>
       </header>
 
       <section>

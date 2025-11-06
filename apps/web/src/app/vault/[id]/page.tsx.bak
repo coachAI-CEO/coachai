@@ -1,0 +1,204 @@
+import Link from "next/link";
+import { buildBase } from "@/app/lib/getBase";
+
+type ParamsP = Promise<{ id: string }>;
+type ParamsS = { id: string };
+type Props = { params: ParamsP | ParamsS };
+
+function unwrapParams(p: ParamsP | ParamsS): Promise<{ id: string }> {
+  return (p as any)?.then ? (p as ParamsP) : Promise.resolve(p as ParamsS);
+}
+
+// Small helpers
+function Badge({ children }: { children: React.ReactNode }) {
+  return <span className="inline-block rounded-full bg-gray-100 text-gray-700 text-xs px-2 py-0.5 mr-1 mb-1">{children}</span>;
+}
+function BulletList({ items }: { items?: string[] }) {
+  if (!Array.isArray(items) || items.length === 0) return null;
+  return (
+    <ul className="list-disc ml-5 space-y-1">
+      {items.map((x, i) => <li key={i}>{x}</li>)}
+    </ul>
+  );
+}
+
+export default async function VaultDetailPage(props: Props) {
+  const { id } = await unwrapParams(props.params);
+  if (!id) {
+    return (
+      <main className="max-w-3xl mx-auto p-6">
+        <Link href="/vault" className="text-sm text-blue-600">← Back</Link>
+        <p className="mt-6 text-red-600 font-semibold">Missing ID</p>
+      </main>
+    );
+  }
+
+  const base = await buildBase();
+  const res  = await fetch(`${base}/api/vault/sessions/${id}`, { cache: "no-store" });
+
+  if (!res.ok) {
+    return (
+      <main className="max-w-3xl mx-auto p-6">
+        <Link href="/vault" className="text-sm text-blue-600">← Back</Link>
+        <p className="mt-6 text-red-600 font-semibold">Failed to load session: {res.status}</p>
+      </main>
+    );
+  }
+
+  const { session: s } = await res.json();
+
+  return (
+    <main className="max-w-3xl mx-auto p-6 space-y-8">
+      <div>
+        <Link href="/vault" className="text-sm text-blue-600">← Back</Link>
+
+        <h1 className="text-2xl font-bold mt-4">{s.title}</h1>
+        <p className="text-gray-600 mt-1">
+          {s.age} • {s.phase} • {s.zone} • {s.totalDurationMin}m
+        </p>
+      </div>
+
+      <section>
+        <h2 className="font-semibold mb-2">Rationale</h2>
+        <p className="text-gray-700">{s.rationale}</p>
+      </section>
+
+      <section>
+        <h2 className="font-semibold mb-3">Session Segments</h2>
+
+        <ol className="space-y-4">
+          {s.segments?.map((seg: any, idx: number) => {
+            const d = seg.drill || {};
+            const hasAnyDetail =
+              d.objective || d.setup ||
+              (Array.isArray(d.equipment) && d.equipment.length) ||
+              (Array.isArray(d.coachingPoints) && d.coachingPoints.length) ||
+              (Array.isArray(d.technicalFocus) && d.technicalFocus.length) ||
+              (Array.isArray(d.psychFocus) && d.psychFocus.length);
+
+            return (
+              <li key={idx} className="border rounded-xl p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-lg font-semibold">
+                      {seg.title || d.title || `Segment ${idx + 1}`}
+                    </div>
+                    {d.title && d.title !== seg.title && (
+                      <div className="text-sm text-gray-500">Drill: {d.title}</div>
+                    )}
+                  </div>
+                  <div className="text-xs text-gray-500 whitespace-nowrap">{seg.durationMin}m</div>
+                </div>
+
+                {/* Principles / Psych tags if present */}
+                {(Array.isArray(seg.principleIds) && seg.principleIds.length) ||
+                (Array.isArray(seg.psychThemeIds) && seg.psychThemeIds.length) ? (
+                  <div className="mt-2">
+                    <div className="text-xs text-gray-500 mb-1">Tags</div>
+                    <div className="flex flex-wrap">
+                      {(seg.principleIds || []).map((p: string, i: number) => (
+                        <Badge key={`p-${i}`}>{p}</Badge>
+                      ))}
+                      {(seg.psychThemeIds || []).map((p: string, i: number) => (
+                        <Badge key={`ps-${i}`}>psych: {p}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+
+                {/* Detailed drill info */}
+                {hasAnyDetail && (
+                  <div className="mt-4 space-y-3">
+                    {d.objective && (
+                      <div>
+                        <div className="font-medium">Objective</div>
+                        <p className="text-gray-700">{d.objective}</p>
+                      </div>
+                    )}
+
+                    {d.setup && (
+                      <div>
+                        <div className="font-medium">Setup</div>
+                        <p className="text-gray-700">{d.setup}</p>
+                      </div>
+                    )}
+
+                    {Array.isArray(d.equipment) && d.equipment.length > 0 && (
+                      <div>
+                        <div className="font-medium">Equipment</div>
+                        <div className="flex flex-wrap mt-1">
+                          {d.equipment.map((e: string, i: number) => <Badge key={i}>{e}</Badge>)}
+                        </div>
+                      </div>
+                    )}
+
+                    {Array.isArray(d.coachingPoints) && d.coachingPoints.length > 0 && (
+                      <div>
+                        <div className="font-medium">Coaching points</div>
+                        <BulletList items={d.coachingPoints} />
+                      </div>
+                    )}
+
+                    {(Array.isArray(d.technicalFocus) && d.technicalFocus.length > 0) ||
+                     (Array.isArray(d.psychFocus) && d.psychFocus.length > 0) ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {Array.isArray(d.technicalFocus) && d.technicalFocus.length > 0 && (
+                          <div>
+                            <div className="font-medium">Technical focus</div>
+                            <BulletList items={d.technicalFocus} />
+                          </div>
+                        )}
+                        {Array.isArray(d.psychFocus) && d.psychFocus.length > 0 && (
+                          <div>
+                            <div className="font-medium">Psych focus</div>
+                            <BulletList items={d.psychFocus} />
+                          </div>
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+
+      {Array.isArray(s.reflections) && s.reflections.length > 0 && (
+        <section>
+          <h2 className="font-semibold mb-2">Reflections</h2>
+          <ol className="space-y-4">
+            {s.reflections.map((r: any) => (
+              <li key={r.id} className="border rounded-lg p-4">
+                <div className="text-xs text-gray-500 mb-2">
+                  {new Date(r.timestamp).toLocaleString()}
+                </div>
+                <p className="mb-2">{r.summary}</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <div className="font-medium">What went well</div>
+                    <BulletList items={r.whatWentWell} />
+                  </div>
+                  <div>
+                    <div className="font-medium">To improve next</div>
+                    <BulletList items={r.toImproveNext} />
+                  </div>
+                  <div>
+                    <div className="font-medium">Focus for next session</div>
+                    <BulletList items={r.focusForNextSession} />
+                  </div>
+                </div>
+                {Array.isArray(r.psychNotes) && r.psychNotes.length > 0 && (
+                  <div className="mt-3 text-sm">
+                    <div className="font-medium">Psych notes</div>
+                    <BulletList items={r.psychNotes} />
+                  </div>
+                )}
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+    </main>
+  );
+}
