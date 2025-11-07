@@ -1,0 +1,43 @@
+{
+  "_raw": "```json\n{\n  \"title\": \"Compact Defending in the Attacking Third\",\n  \"objective\": \"To develop the ability to delay and force play away from goal, maintaining a compact defensive shape.\",\n  \"organization\": \"The practice takes place in the attacking third, from the edge of the penalty area to the halfway line. Two teams compete: the defending team (4 players) and the attacking team (4 players). The defending team aims to prevent the attackers from penetrating the central zone. Attackers attempt to advance into the central zone and score. Defenders should work together to force play wide and delay the attack until support arrives. The exercise emphasizes a narrow defensive block, with constant communication and scanning for threats. The trigger is an attacker entering the defensive zone.\",\n  \"setup\": \"4v4 in the attacking third with a designated central zone and one goal.\",\n  \"constraints\": \"Defenders can only score by winning the ball and dribbling out of the attacking third. Attackers must complete a pass into the central zone before shooting.\",\n  \"progression\": [\n    \"Introduce a second goal for the attacking team. The defending team scores by winning the ball and playing a pass into a teammate in the other half.\",\n    \"Limit the number of touches for attackers.\",\n    \"Add a target player for the attackers to pass to.\"\n  ],\n  \"equipment\": [\"Cones\", \"Balls\", \"Bibs\", \"Goals\"],\n  \"coachingPoints\": [\n    \"Get compact and deny space between the lines.\",\n    \"The first defender presses the ball, others provide cover and balance.\",\n    \"Force play wide, don't allow central penetration.\",\n    \"Delay the attacker and stay on your feet.\",\n    \"Communicate constantly, 'pressure, cover, balance'.\",\n    \"Scan the field and assess threats.\",\n    \"Track runners and maintain awareness.\",\n    \"Win the ball back and counter-attack.\"\n  ],\n  \"phase\": \"DEFENDING\",\n  \"zone\": \"ATTACKING_THIRD\",\n  \"age\": \"U12\",\n  \"goalsAvailable\": 1,\n  \"tags\": [\"compact\", \"delay\", \"shape\", \"pressure\", \"cover\"],\n  \"gameModel\": \"Balanced Youth Model\"\n}\n```",
+  "title": "Compact Defending in the Attacking Third",
+  "objective": "To develop the ability to delay and force play away from goal, maintaining a compact defensive shape.",
+  "organization": "The practice takes place in the attacking third, from the edge of the penalty area to the halfway line. Two teams compete: the defending team (4 players) and the attacking team (4 players). The defending team aims to prevent the attackers from penetrating the central zone. Attackers attempt to advance into the central zone and score. Defenders should work together to force play wide and delay the attack until support arrives. The exercise emphasizes a narrow defensive block, with constant communication and scanning for threats. The trigger is an attacker entering the defensive zone.",
+  "setup": "4v4 in the attacking third with a designated central zone and one goal.",
+  "constraints": "Defenders can only score by winning the ball and dribbling out of the attacking third. Attackers must complete a pass into the central zone before shooting.",
+  "progression": [
+    "Introduce a second goal for the attacking team. The defending team scores by winning the ball and playing a pass into a teammate in the other half.",
+    "Limit the number of touches for attackers.",
+    "Add a target player for the attackers to pass to."
+  ],
+  "equipment": [
+    "Cones",
+    "Balls",
+    "Bibs",
+    "Goals"
+  ],
+  "coachingPoints": [
+    "Get compact and deny space between the lines.",
+    "The first defender presses the ball, others provide cover and balance.",
+    "Force play wide, don't allow central penetration.",
+    "Delay the attacker and stay on your feet.",
+    "Communicate constantly, 'pressure, cover, balance'.",
+    "Scan the field and assess threats.",
+    "Track runners and maintain awareness.",
+    "Win the ball back and counter-attack."
+  ],
+  "phase": "DEFENDING",
+  "zone": "ATTACKING_THIRD",
+  "age": "U12",
+  "goalsAvailable": 1,
+  "tags": [
+    "compact",
+    "delay",
+    "shape",
+    "pressure",
+    "cover"
+  ],
+  "gameModel": "Balanced Youth Model",
+  "slug": "compact-defending-in-the-attacking-third",
+  "updatedAt": "2025-11-06T07:14:27.841Z"
+}

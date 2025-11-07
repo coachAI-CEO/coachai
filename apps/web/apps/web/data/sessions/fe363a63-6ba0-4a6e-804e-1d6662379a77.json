@@ -1,0 +1,322 @@
+{
+  "id": "fe363a63-6ba0-4a6e-804e-1d6662379a77",
+  "slug": "u12-transition-defensive-third-coachai-balanced-youth-model-90m",
+  "title": "U12 TRANSITION – defensive third — CoachAI Balanced Youth Model (90m)",
+  "plan": {
+    "rationale": "This training plan focuses on building a foundation of attacking principles, transitioning effectively, and enhancing player decision-making under pressure.",
+    "summary": "Players will improve their ability to maintain possession, create goal-scoring opportunities, and react to transitions. Emphasis will be on quick decision-making and efficient movement.",
+    "totalDurationMin": 90,
+    "segments": [
+      {
+        "title": "Warm-up and Technical Focus",
+        "durationMin": 20,
+        "principleIds": [
+          "passing",
+          "receiving",
+          "scanning"
+        ],
+        "psychThemeIds": [
+          "focus",
+          "confidence"
+        ],
+        "drill": {
+          "title": "Dynamic Passing & Receiving",
+          "objective": "Improve passing accuracy, receiving technique, and peripheral vision.",
+          "organization": "Players in pairs, passing and receiving using different techniques (inside foot, outside foot, volley). Focus on head-up scanning before receiving. Gradually increase the distance and pace. Add a second ball to increase cognitive load.",
+          "setup": "Pairs, cones to mark distance, balls. Area: 20x20 yard grid.",
+          "equipment": [
+            "cones",
+            "balls"
+          ],
+          "constraints": [
+            "Limited touches (2-touch max)",
+            "Must scan before receiving",
+            "Vary passing techniques"
+          ],
+          "progression": [
+            "Add defenders (passive initially)",
+            "Increase distance",
+            "Introduce a volley component"
+          ],
+          "coachingPoints": [
+            "Body shape to receive",
+            "Weight and accuracy of pass",
+            "Scanning the field",
+            "First touch direction"
+          ],
+          "technicalFocus": [
+            "passing",
+            "receiving",
+            "scanning",
+            "first touch"
+          ],
+          "psychFocus": [
+            "focus",
+            "awareness"
+          ],
+          "modelTags": [
+            "COACHAI",
+            "POSSESSION",
+            "PASSING"
+          ],
+          "modelInfluence": {
+            "modelName": "CoachAI Balanced Youth Model",
+            "principlesApplied": [
+              "compactness",
+              "delay",
+              "cover"
+            ],
+            "tacticalCues": [
+              "Nearest presses, second covers, third balances",
+              "Show outside when possible",
+              "Recover behind the ball on loss"
+            ],
+            "unitFocus": "Back line + DM",
+            "intensityProfile": "moderate",
+            "scoringBias": "Defensive success: force wide, block, regain",
+            "constraintsToApply": [
+              "Touch limit for attackers",
+              "Bonus if defending team forces play wide",
+              "Regain within 6s = extra point"
+            ],
+            "coachingLanguage": [
+              "Delay",
+              "Cover",
+              "Compact",
+              "Show wide"
+            ]
+          }
+        }
+      },
+      {
+        "title": "Possession with Purpose",
+        "durationMin": 30,
+        "principleIds": [
+          "support",
+          "penetration",
+          "width"
+        ],
+        "psychThemeIds": [
+          "communication",
+          "decision making"
+        ],
+        "drill": {
+          "title": "4v4+4 Possession Game",
+          "objective": "Develop quick passing, support play, and create goal-scoring opportunities.",
+          "organization": "4v4 inside a grid with 4 neutral players on the outside. The neutral players support possession. Focus on maintaining possession, finding penetrating passes to the neutral players and shifting the ball quickly. Teams score by passing to neutral players who then dribble across the end line.",
+          "setup": "Grid: 30x30 yards. Players: 4v4 + 4 neutrals. Duration: 3x8 minutes.",
+          "equipment": [
+            "cones",
+            "balls",
+            "bibs"
+          ],
+          "constraints": [
+            "Two-touch limit inside the grid.",
+            "Neutral players can only pass once back into the grid.",
+            "Encourage quick switching of play"
+          ],
+          "progression": [
+            "Reduce touches.",
+            "Add a defender to create overload and encourage quick decision making",
+            "Introduce a condition for scoring, such as two passes to neutral players before scoring."
+          ],
+          "coachingPoints": [
+            "Angles and distances of support",
+            "Weight of pass",
+            "Quick decisions",
+            "Movement off the ball",
+            "Switching play"
+          ],
+          "technicalFocus": [
+            "passing",
+            "receiving",
+            "movement off the ball",
+            "communication"
+          ],
+          "psychFocus": [
+            "communication",
+            "decision making",
+            "awareness"
+          ],
+          "modelTags": [
+            "COACHAI",
+            "POSSESSION",
+            "ATTACKING"
+          ],
+          "modelInfluence": {
+            "modelName": "CoachAI Balanced Youth Model",
+            "principlesApplied": [
+              "compactness",
+              "delay",
+              "cover"
+            ],
+            "tacticalCues": [
+              "Nearest presses, second covers, third balances",
+              "Show outside when possible",
+              "Recover behind the ball on loss"
+            ],
+            "unitFocus": "Back line + DM",
+            "intensityProfile": "moderate",
+            "scoringBias": "Defensive success: force wide, block, regain",
+            "constraintsToApply": [
+              "Touch limit for attackers",
+              "Bonus if defending team forces play wide",
+              "Regain within 6s = extra point"
+            ],
+            "coachingLanguage": [
+              "Delay",
+              "Cover",
+              "Compact",
+              "Show wide"
+            ]
+          }
+        }
+      },
+      {
+        "title": "Transition & Finishing",
+        "durationMin": 30,
+        "principleIds": [
+          "counter-attack",
+          "support",
+          "finishing"
+        ],
+        "psychThemeIds": [
+          "confidence",
+          "composure"
+        ],
+        "drill": {
+          "title": "Transition to Goal",
+          "objective": "Improve quick transitions from defense to attack and finishing.",
+          "organization": "Team A starts with a pass to a forward. Team B attempts to win the ball and quickly counter-attack to score on the main goal. Team A defends the main goal. If Team A wins the ball, they attack the same goal. The focus is quick transition and decisive finishing.",
+          "setup": "Half field. Teams: 6v6 + GK. Cones to mark start. Duration: 4x7 minutes.",
+          "equipment": [
+            "cones",
+            "balls",
+            "goals",
+            "bibs"
+          ],
+          "constraints": [
+            "Limited touches on transitions",
+            "Quick decisions needed",
+            "Focus on accurate shooting and finishing"
+          ],
+          "progression": [
+            "Add defensive player",
+            "Introduce offsides",
+            "Allow counter attacks from all areas"
+          ],
+          "coachingPoints": [
+            "Quick transitions",
+            "Support runs",
+            "Decision making during the transition",
+            "Finishing technique",
+            "Communication"
+          ],
+          "technicalFocus": [
+            "passing",
+            "shooting",
+            "transition",
+            "defending"
+          ],
+          "psychFocus": [
+            "confidence",
+            "composure",
+            "decision making"
+          ],
+          "modelTags": [
+            "COACHAI",
+            "TRANSITION",
+            "ATTACKING",
+            "FINISHING"
+          ],
+          "modelInfluence": {
+            "modelName": "CoachAI Balanced Youth Model",
+            "principlesApplied": [
+              "compactness",
+              "delay",
+              "cover"
+            ],
+            "tacticalCues": [
+              "Nearest presses, second covers, third balances",
+              "Show outside when possible",
+              "Recover behind the ball on loss"
+            ],
+            "unitFocus": "Back line + DM",
+            "intensityProfile": "moderate",
+            "scoringBias": "Defensive success: force wide, block, regain",
+            "constraintsToApply": [
+              "Touch limit for attackers",
+              "Bonus if defending team forces play wide",
+              "Regain within 6s = extra point"
+            ],
+            "coachingLanguage": [
+              "Delay",
+              "Cover",
+              "Compact",
+              "Show wide"
+            ]
+          }
+        }
+      },
+      {
+        "title": "Cool-down and Review",
+        "durationMin": 10,
+        "principleIds": [],
+        "psychThemeIds": [
+          "reflection"
+        ],
+        "drill": {
+          "title": "Dynamic Stretching and Review",
+          "objective": "Promote recovery and reinforce key learning points.",
+          "organization": "Light stretching. Review of session objectives, key technical points, and psychological aspects covered. Encourage player feedback.",
+          "setup": "Open area. Players: All.",
+          "equipment": [],
+          "constraints": [],
+          "progression": [],
+          "coachingPoints": [
+            "Discuss key takeaways",
+            "Review of performance",
+            "Player self reflection"
+          ],
+          "technicalFocus": [],
+          "psychFocus": [
+            "reflection",
+            "feedback"
+          ],
+          "modelTags": [
+            "COACHAI"
+          ],
+          "modelInfluence": {
+            "modelName": "CoachAI Balanced Youth Model",
+            "principlesApplied": [
+              "compactness",
+              "delay",
+              "cover"
+            ],
+            "tacticalCues": [
+              "Nearest presses, second covers, third balances",
+              "Show outside when possible",
+              "Recover behind the ball on loss"
+            ],
+            "unitFocus": "Back line + DM",
+            "intensityProfile": "moderate",
+            "scoringBias": "Defensive success: force wide, block, regain",
+            "constraintsToApply": [
+              "Touch limit for attackers",
+              "Bonus if defending team forces play wide",
+              "Regain within 6s = extra point"
+            ],
+            "coachingLanguage": [
+              "Delay",
+              "Cover",
+              "Compact",
+              "Show wide"
+            ]
+          }
+        }
+      }
+    ],
+    "title": "U12 TRANSITION – defensive third — CoachAI Balanced Youth Model (90m)"
+  },
+  "savedAt": "2025-11-06T07:55:44.960Z"
+}

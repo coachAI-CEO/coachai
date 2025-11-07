@@ -1,0 +1,93 @@
+import { parseDrillJson } from "./parseDrill";
+import { loadGameModel } from "@/lib/game-models";
+import { runPlanAI as runDrillAI } from "./providerRouter";
+
+export async function generateDrill(input: {
+  phase: string;
+  zone: string;
+  age: string;
+  goalsAvailable?: number;
+  keywords?: string[];
+  model?: "POSSESSION" | "PRESSING" | "TRANSITION" | "COACHAI";
+  playersAvailable?: number;
+
+}) {
+  const gm = await loadGameModel(input.model || "COACHAI");
+
+  const prompt = `
+You are CoachAI, an elite UEFA A-licensed technical coach.
+Return a SINGLE JSON object only. NO prose, NO markdown.
+
+REQUIRED SHAPE:
+{
+  "title": string,
+  "objective": string,
+  "organization": string,     // 3–6 sentences: field size, zones, player roles, rotations, triggers, flow
+  "setup": string,            // concise one-liner
+  "constraints": string,      // special rules
+  "progression": string[],    // 2–4 steps
+  "equipment": string[],      // items
+  "coachingPoints": string[], // 4–8 bullets
+  "phase": string, "zone": string, "age": string,
+  "goalsAvailable": number,
+  "tags": string[],
+  "gameModel": string
+}
+
+CONTEXT
+Game Model: ${gm.name}
+Philosophy: ${gm.philosophy ?? ""}
+
+INPUT
+Phase: ${input.phase}
+Zone: ${input.zone}
+Age: ${input.age}
+
+Players available: ${input.playersAvailable}
+Goals available: ${input.goalsAvailable ?? 0}
+Keywords: ${(input.keywords || []).join(", ")}
+
+    
+STYLE
+ .
+    "- Use exactly ${input.playersAvailable} total players in the drill.\n" .
+    "- If core activity uses fewer players (e.g., 5v4), add neutrals or servers so total = that number.\n" .
+    "- In the Organization section, include a line like \"Players: AvD(+N)\" or \"Total players: N\" so parsing is consistent.\n"
+  - Use clear coaching language.
+- The "organization" must be a rich narrative (3–6 sentences).
+`;
+
+  const text = await runDrillAI(prompt);
+  const drill = parseDrillJson(text);
+
+  // Fill guaranteed fields from input / model when missing
+  drill.phase = drill.phase || input.phase;
+  drill.zone  = drill.zone  || input.zone;
+  drill.age   = drill.age   || input.age;
+  drill.goalsAvailable = drill.goalsAvailable ?? (input.goalsAvailable ?? 0);
+  drill.gameModel = drill.gameModel || `${gm.name} – ${input.phase} in ${input.zone.replace(/_/g," ").toLowerCase()}`;
+
+  // --- Normalize players + organization header for consistent parsing ---
+  if (typeof input.playersAvailable === "number" && input.playersAvailable > 0) {
+    (drill as any).playersAvailable = input.playersAvailable;
+  } else if (typeof (drill as any).playersAvailable !== "number") {
+    // leave undefined if AI didn't set it
+  }
+
+  {
+    const N = (drill as any).playersAvailable;
+    const hasHeader = typeof drill.organization === "string"
+      ? /^(?:Players:\s*\d+v\d+(?:\+\d+)?|Total players:\s*\d+)/i.test(drill.organization.trim())
+      : false;
+
+    if (typeof N === "number" && N > 0 && !hasHeader) {
+      const org = String(drill.organization || "").trim();
+      drill.organization = `Total players: ${N}\n${org}`;
+    }
+  }
+
+  // Safety fallback for organization
+  drill.organization = drill.organization || "Set up a marked area with clear roles and rotations. Emphasize timing, compactness, and decision-making under the session objective.";
+
+  return drill;
+}

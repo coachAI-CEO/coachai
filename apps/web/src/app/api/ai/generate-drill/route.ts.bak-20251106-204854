@@ -22,7 +22,6 @@ const keywords =
       phase: body.phase,
       zone: body.zone,
       age: body.age,
-      playersAvailable: __playersAvailable,
       goalsAvailable: Number(body.goalsAvailable ?? 0),
       keywords,
     });

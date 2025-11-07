@@ -42,3 +42,5 @@ export async function getDrill(slug: string): Promise<Drill | null> {
     return null;
   }
 }
+
+

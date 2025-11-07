@@ -415,10 +415,10 @@ export default function AutoDrillDiagram({drill}:{drill: DrillLike}){
   const usedFromBase = base.gks.length + base.attackers.length + base.defenders.length;
 
   // Desired total (UI input > parsed org > fallback)
-  const desired = (Number((drill as any).playersAvailable) || 0)
-  || (parsePlayersFromOrganization((drill as any).organization) ?? 0)
-  || (_est.total || 0)
-  || usedFromBase;
+  const desired =
+    (typeof drill.playersAvailable === "number" && drill.playersAvailable > 0)
+      ? drill.playersAvailable
+      : ((parsePlayersFromOrganization(drill.organization) ?? drill.totalPlayers ?? drill.numPlayers ?? _est.total) || usedFromBase);
 
   /* ------------------------- Build markers (cap-aware) ------------------------- */
 

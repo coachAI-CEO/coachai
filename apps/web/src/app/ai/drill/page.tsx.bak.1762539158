@@ -20,83 +20,47 @@ type Drill = {
   gameModel?: string;
 };
 
-
-
-
-
 function OrgExtras({ text }: { text?: string }) {
   const raw = String(text || "");
+  if (!raw) return null;
 
-  // 1) labeled key: "Label: value"
-  const pick = (label: string) => {
-    const re = new RegExp(label + ":\s*([^;\n\.]+)", "i"); // stop on ; or EOL or .
+  // Flexible label matching
+  const pick = (label) => {
+    const re = new RegExp("\\b(?:" + label + "):\\s*([^\n]+)", "i");
     const m = raw.match(re);
     return m ? m[1].trim() : "";
   };
 
-  // 2) sentence-wise fallback
-  const sentences = raw
-    .replace(/\s+/g, " ")
-    .split(/(?<=[.!?])\s+/)
-    .map(s => s.trim());
+  const triggers  = pick("Trigger|Triggers");
+  const rotation  = pick("Rotation|Rotations");
+  const scoring   = pick("Scoring|Score");
+  const success   = pick("Success Condition|Success");
+  const restartsL = pick("Restarts|Restart");
+  const restartsS = (() => {
+    const m = raw.match(/\bPlay restarts?[^.]*\./i);
+    return m ? m[0].trim() : "";
+  })();
+  const restarts  = restartsL || restartsS;
 
-  const findSentence = (rx: RegExp) => {
-    const hit = sentences.find(s => rx.test(s));
-    return hit ? hit.replace(/\s*[.,]$/, "") : "";
-  };
+  const Row = ({ label, value }) =>
+    !value ? null : (
+      <div className="text-sm text-slate-700 mb-1">
+        <span className="font-semibold">{label}:</span> {value}
+      </div>
+    );
 
-  
-  const used: string[] = [];
-  const take = (val: string) => { if (val) used.push(val); return val; };
-
-  const ex = {
-    triggers:
-      take(pick("Triggers")
-        || findSentence(/\btrigger|on regain|cue\b|pass into|lay-?off|third[- ]man|overlap|underlap|ball to (?:wide|neutral)|checks into space/i, used)),
-
-    rotation:
-      take(pick("Rotation")
-        || findSentence(/\brotate|rotation|swap|switch(?:ing)? roles?/i, used)),
-
-    scoring:
-      take(pick("Scoring")
-        || findSentence(/\bscore|goal|finish(?:es|ing)?|points?\b/i, used)),
-
-    restarts:
-      take(pick("Restarts")
-        || findSentence(/\brestart|play restarts|from (?:gk|goal\s*kick|coach|server)|after (?:goal|out)/i, used)
-        || findSentence(/\bball starts|start from\b/i, used)),
-
-    success:
-      take(pick("Success")
-        || findSentence(/\bsuccess|win possession|complete \d+ passes|within \d+\s*s|delay for \d+\s*s/i, used))
-  };
-
-
-  const Row = ({label, val}:{label:string; val:string}) => (
-    <div className="flex gap-1 text-xs">
-      <span className="font-semibold">{label}:</span>
-      <span className={val ? "" : "text-slate-400"}>{val || "—"}</span>
-    </div>
-  );
+  if (!triggers && !rotation && !scoring && !restarts && !success) return null;
 
   return (
-    <div className="mt-2 rounded border border-slate-200/60 bg-white/40 px-2.5 py-2">
-      <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">🧠 Organization Extras</div>
-      <div className="grid gap-1">
-        <Row label="Triggers"  val={ex.triggers} />
-        <Row label="Rotation"  val={ex.rotation} />
-        <Row label="Scoring"   val={ex.scoring} />
-        <Row label="Restarts"  val={ex.restarts} />
-        <Row label="Success"   val={ex.success} />
-      </div>
+    <div className="mt-2">
+      <Row label="Triggers" value={triggers} />
+      <Row label="Rotation" value={rotation} />
+      <Row label="Scoring" value={scoring} />
+      <Row label="Restarts" value={restarts} />
+      <Row label="Success condition" value={success} />
     </div>
   );
 }
-
-
-
-
 // --- Spec summary (parsed from Organization) --------------------------------
 function extractSpec(org?: string){
   const s = String(org||"");
@@ -332,10 +296,6 @@ export default function DrillGeneratorPage() {
     <OrgSpecs text={drill.organization} age={drill.age} />
 
 <OrgBlockV2 text={drill.organization} />
-
-    
-    
-    <OrgExtras text={drill.organization} />
 <OrgSections text={drill.organization} />
 </section>
 )}
@@ -399,7 +359,6 @@ export default function DrillGeneratorPage() {
 /* --- OrgBlockV2: robust organization renderer --- */
 function OrgBlockV2({ text }: { text?: string }) {
   const raw = String(text || "").trim();
-  const displayRaw = raw.replace(/^\s*(Triggers|Rotation|Scoring|Restarts|Success):.*$/gim, "").trim();
   if (!raw) return null;
 
   // Header (Total players)

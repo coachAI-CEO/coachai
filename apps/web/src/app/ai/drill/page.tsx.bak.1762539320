@@ -21,81 +21,36 @@ type Drill = {
 };
 
 
-
-
-
 function OrgExtras({ text }: { text?: string }) {
   const raw = String(text || "");
 
-  // 1) labeled key: "Label: value"
-  const pick = (label: string) => {
-    const re = new RegExp(label + ":\s*([^;\n\.]+)", "i"); // stop on ; or EOL or .
+  // Grab "Label: value" until next semicolon, newline, or period.
+  function pickInline(label: string) {
+    const re = new RegExp(label + ":\\s*([^;\\n\\.]+)", "i");
     const m = raw.match(re);
     return m ? m[1].trim() : "";
-  };
-
-  // 2) sentence-wise fallback
-  const sentences = raw
-    .replace(/\s+/g, " ")
-    .split(/(?<=[.!?])\s+/)
-    .map(s => s.trim());
-
-  const findSentence = (rx: RegExp) => {
-    const hit = sentences.find(s => rx.test(s));
-    return hit ? hit.replace(/\s*[.,]$/, "") : "";
-  };
-
-  
-  const used: string[] = [];
-  const take = (val: string) => { if (val) used.push(val); return val; };
+  }
 
   const ex = {
-    triggers:
-      take(pick("Triggers")
-        || findSentence(/\btrigger|on regain|cue\b|pass into|lay-?off|third[- ]man|overlap|underlap|ball to (?:wide|neutral)|checks into space/i, used)),
-
-    rotation:
-      take(pick("Rotation")
-        || findSentence(/\brotate|rotation|swap|switch(?:ing)? roles?/i, used)),
-
-    scoring:
-      take(pick("Scoring")
-        || findSentence(/\bscore|goal|finish(?:es|ing)?|points?\b/i, used)),
-
-    restarts:
-      take(pick("Restarts")
-        || findSentence(/\brestart|play restarts|from (?:gk|goal\s*kick|coach|server)|after (?:goal|out)/i, used)
-        || findSentence(/\bball starts|start from\b/i, used)),
-
-    success:
-      take(pick("Success")
-        || findSentence(/\bsuccess|win possession|complete \d+ passes|within \d+\s*s|delay for \d+\s*s/i, used))
+    triggers: pickInline("Triggers"),
+    rotation: pickInline("Rotation"),
+    scoring:  pickInline("Scoring"),
+    restarts: pickInline("Restarts"),
+    success:  pickInline("Success"),
   };
 
-
-  const Row = ({label, val}:{label:string; val:string}) => (
-    <div className="flex gap-1 text-xs">
-      <span className="font-semibold">{label}:</span>
-      <span className={val ? "" : "text-slate-400"}>{val || "—"}</span>
-    </div>
-  );
+  if (!Object.values(ex).some(Boolean)) return null;
 
   return (
-    <div className="mt-2 rounded border border-slate-200/60 bg-white/40 px-2.5 py-2">
-      <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">🧠 Organization Extras</div>
-      <div className="grid gap-1">
-        <Row label="Triggers"  val={ex.triggers} />
-        <Row label="Rotation"  val={ex.rotation} />
-        <Row label="Scoring"   val={ex.scoring} />
-        <Row label="Restarts"  val={ex.restarts} />
-        <Row label="Success"   val={ex.success} />
-      </div>
+    <div className="mt-2 text-xs text-slate-700 grid gap-1">
+      {ex.triggers && <div><span className="font-semibold">Triggers:</span> {ex.triggers}</div>}
+      {ex.rotation && <div><span className="font-semibold">Rotation:</span> {ex.rotation}</div>}
+      {ex.scoring &&  <div><span className="font-semibold">Scoring:</span> {ex.scoring}</div>}
+      {ex.restarts && <div><span className="font-semibold">Restarts:</span> {ex.restarts}</div>}
+      {ex.success &&  <div><span className="font-semibold">Success:</span> {ex.success}</div>}
     </div>
   );
 }
-
-
-
 
 // --- Spec summary (parsed from Organization) --------------------------------
 function extractSpec(org?: string){
@@ -333,8 +288,6 @@ export default function DrillGeneratorPage() {
 
 <OrgBlockV2 text={drill.organization} />
 
-    
-    
     <OrgExtras text={drill.organization} />
 <OrgSections text={drill.organization} />
 </section>
@@ -399,7 +352,6 @@ export default function DrillGeneratorPage() {
 /* --- OrgBlockV2: robust organization renderer --- */
 function OrgBlockV2({ text }: { text?: string }) {
   const raw = String(text || "").trim();
-  const displayRaw = raw.replace(/^\s*(Triggers|Rotation|Scoring|Restarts|Success):.*$/gim, "").trim();
   if (!raw) return null;
 
   // Header (Total players)
