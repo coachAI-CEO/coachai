@@ -40,9 +40,11 @@ function OrgExtras({ text }: { text?: string }) {
     .split(/(?<=[.!?])\s+/)
     .map(s => s.trim());
 
-  const findSentence = (rx: RegExp) => {
+  const findSentence = (rx: RegExp, usedArr?: string[]) => {
     const hit = sentences.find(s => rx.test(s));
-    return hit ? hit.replace(/\s*[.,]$/, "") : "";
+    const cleaned = hit ? hit.replace(/\s*[.,]$/, "") : "";
+    if (cleaned && usedArr) usedArr.push(cleaned);
+    return cleaned;
   };
 
   
@@ -137,12 +139,25 @@ function OrgBlock({text}:{text?:string}) {
     </>
   );
 }
+
+// Helper to render enum-like labels (e.g. ATTACKING_THIRD -> Attacking Third)
+function prettyLabel(val?: string | null) {
+  if (!val) return "—";
+  return String(val)
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .split(/\s+/)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
 export default function DrillGeneratorPage() {
   const [phase, setPhase] = useState("ATTACKING");
   const [zone, setZone] = useState("ATTACKING_THIRD");
   const [age, setAge] = useState("U12");
   const [goals, setGoals] = useState(1);
-  const [keywords, setKeywords] = useState("compact, delay");
+  const [focus, setFocus] = useState("");
+  const [keywords, setKeywords] = useState("");
   const [model, setModel] = useState<GameModelId>(DEFAULT_GAME_MODEL_ID);
   const [playersAvailable, setPlayersAvailable] = useState<number>(12);
 
@@ -195,6 +210,7 @@ export default function DrillGeneratorPage() {
       });
       const data = await res.json();
       const out = (data?.drill ?? data) as Drill;
+      console.groupCollapsed("AI drill response"); console.log(out); console.groupEnd();
       setDrill({ ...out, playersAvailable: Number(playersAvailable) || 0 });
     } finally {
       setLoading(false);
@@ -313,7 +329,7 @@ export default function DrillGeneratorPage() {
           )}
 
           <div className="mt-3 text-sm text-gray-600">
-            Phase: <strong>{drill.phase}</strong> · Zone: <strong>{drill.zone}</strong> · Age: <strong>{drill.age}</strong> · Goals available: <strong>{drill.goalsAvailable}</strong> · Players available: <strong>{drill.playersAvailable ?? playersAvailable}</strong>
+            Phase: <strong>{prettyLabel(drill.phase)}</strong> · Zone: <strong>{prettyLabel(drill.zone)}</strong> · Age: <strong>{drill.age}</strong> · Goals available: <strong>{drill.goalsAvailable}</strong> · Players available: <strong>{drill.playersAvailable ?? playersAvailable}</strong>
           </div>
 
           {Array.isArray(drill.tags) && drill.tags.length > 0 && (
@@ -336,7 +352,6 @@ export default function DrillGeneratorPage() {
     
     
     <OrgExtras text={drill.organization} />
-<OrgSections text={drill.organization} />
 </section>
 )}
 

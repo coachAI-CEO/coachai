@@ -1,7 +1,8 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 import { NextResponse } from "next/server";
 import { generateDrill } from "@/lib/ai/generateDrill";
-
-export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
@@ -27,9 +28,9 @@ const keywords =
       keywords,
     });
 
-    return NextResponse.json({ ok: true, drill, playersAvailable: __playersAvailable });
+    return NextResponse.json({ ok: true, drill, playersAvailable: __playersAvailable }, { headers: { "Cache-Control": "no-store, must-revalidate" } });
   } catch (e: any) {
     console.error("[api/ai/generate-drill] error:", e?.stack || e);
-    return NextResponse.json({ ok: false, error: e?.message || "failed" }, { status: 500 });
+    return NextResponse.json({ ok: false, error: e?.message || "failed" }, { status: 500 }, { headers: { "Cache-Control": "no-store, must-revalidate" } });
   }
 }
