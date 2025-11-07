@@ -1,0 +1,238 @@
+import Link from "next/link";
+import { buildBase } from "@/app/lib/getBase";
+
+type ParamsP = Promise<{ id: string, idx: string }>;
+type ParamsS = { id: string, idx: string };
+type Props = { params: ParamsP | ParamsS };
+
+function unwrapParams(p: ParamsP | ParamsS): Promise<{ id: string, idx: string }> {
+  return (p as any)?.then ? (p as ParamsP) : Promise.resolve(p as ParamsS);
+}
+
+export const dynamic = "force-dynamic";
+
+export default async function DrillDetailPage(props: Props) {
+  const { id, idx } = await unwrapParams(props.params);
+  const base = await buildBase();
+
+  const res = await fetch(`${base}/api/vault/sessions/${id}`, { cache: "no-store" });
+  if (!res.ok) {
+    return (
+      <main className="max-w-3xl mx-auto p-6">
+        <Link href={`/vault/${id}`} className="text-sm text-blue-600">← Back to session</Link>
+        <p className="mt-6 text-red-600 font-semibold">Failed to load session.</p>
+      </main>
+    );
+  }
+
+  const { session } = await res.json();
+  const i = Number(idx);
+  const seg = Array.isArray(session?.segments) ? session.segments[i] : null;
+  const drill = seg?.drill ?? null;
+
+  return (
+    <main className="max-w-3xl mx-auto p-6">
+      <Link href={`/vault/${id}`} className="text-sm text-blue-600">← Back to session</Link>
+
+      <h1 className="text-3xl font-bold mt-4">{drill?.title ?? seg?.title ?? "Drill"}</h1>
+      <p className="text-xl text-gray-600 mt-1">{seg?.durationMin ?? 0}m</p>
+
+      {drill?.objective && (
+        <section className="mt-8">
+          <h2 className="font-semibold mb-2">Objective</h2>
+          <p className="text-gray-800">{drill.objective}</p>
+        </section>
+      )}
+
+      {drill?.organization && (
+        <section className="mt-8">
+          <h2 className="font-semibold mb-2">Organization</h2>
+          <p className="text-gray-800 whitespace-pre-wrap">{drill.organization}</p>
+        </section>
+      )}
+
+      {drill?.setup && (
+        <section className="mt-8">
+          <h2 className="font-semibold mb-2">Setup</h2>
+          <p className="text-gray-800 whitespace-pre-wrap">{drill.setup}</p>
+        </section>
+      )}
+
+      {drill?.constraints && (
+        <section className="mt-8">
+          <h2 className="font-semibold mb-2">Constraints</h2>
+          <p className="text-gray-800 whitespace-pre-wrap">{drill.constraints}</p>
+        </section>
+      )}
+
+      {Array.isArray(drill?.progression) && drill!.progression.length > 0 && (
+        <section className="mt-8">
+          <h2 className="font-semibold mb-2">Progression</h2>
+          <ul className="list-disc ml-6 text-gray-800">
+            {drill!.progression.map((p: string, i: number) => <li key={i}>{p}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {Array.isArray(drill?.equipment) && drill!.equipment.length > 0 && (
+        <section className="mt-8">
+          <h2 className="font-semibold mb-2">Equipment</h2>
+          <ul className="list-disc ml-6 text-gray-800">
+            {drill!.equipment.map((e: string, i: number) => <li key={i}>{e}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {Array.isArray(drill?.coachingPoints) && drill!.coachingPoints.length > 0 && (
+        <section className="mt-8">
+          <h2 className="font-semibold mb-2">Coaching Points</h2>
+          <ul className="list-disc ml-6 text-gray-800">
+            {drill!.coachingPoints.map((cp: string, i: number) => <li key={i}>{cp}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {(Array.isArray(drill?.technicalFocus) && drill!.technicalFocus.length > 0) ||
+       (Array.isArray(drill?.psychFocus) && drill!.psychFocus.length > 0) ? (
+        <section className="mt-8">
+          <h2 className="font-semibold mb-2">Tags</h2>
+          <div className="flex flex-wrap gap-2">
+            {(drill?.technicalFocus ?? []).map((t: string, i: number) => (
+              <span key={`t-${i}`} className="text-xs px-2 py-1 rounded-full border">{t}</span>
+            ))}
+            {(drill?.psychFocus ?? []).map((t: string, i: number) => (
+              <span key={`p-${i}`} className="text-xs px-2 py-1 rounded-full border">psych: {t}</span>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {drill?.modelInfluence && (
+        <section className="mt-8">
+          <h2 className="font-semibold mb-2">Model influence</h2>
+          <div className="text-sm text-gray-600 mb-2">{drill.modelInfluence.modelName}</div>
+
+          {Array.isArray(drill.modelInfluence.principlesApplied) && drill.modelInfluence.principlesApplied.length > 0 && (
+            <div className="mb-3">
+              <div className="text-sm font-medium mb-1">Principles applied</div>
+              <div className="flex flex-wrap gap-2">
+                {drill.modelInfluence.principlesApplied.map((p: string, i: number) => (
+                  <span key={i} className="text-xs px-2 py-1 rounded-full border">{p}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {Array.isArray(drill.modelInfluence.tacticalCues) && drill.modelInfluence.tacticalCues.length > 0 && (
+            <div className="mb-3">
+              <div className="text-sm font-medium mb-1">Tactical cues</div>
+              <ul className="list-disc ml-6 text-gray-800">
+                {drill.modelInfluence.tacticalCues.map((t: string, i: number) => <li key={i}>{t}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {(drill.modelInfluence.scoringBias || drill.modelInfluence.intensityProfile || drill.modelInfluence.unitFocus) && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3 text-sm">
+              {drill.modelInfluence.unitFocus && (
+                <div><div className="font-medium">Unit focus</div><div>{drill.modelInfluence.unitFocus}</div></div>
+              )}
+              {drill.modelInfluence.intensityProfile && (
+                <div><div className="font-medium">Intensity</div><div>{drill.modelInfluence.intensityProfile}</div></div>
+              )}
+              {drill.modelInfluence.scoringBias && (
+                <div><div className="font-medium">Scoring bias</div><div>{drill.modelInfluence.scoringBias}</div></div>
+              )}
+            </div>
+          )}
+
+          {Array.isArray(drill.modelInfluence.constraintsToApply) && drill.modelInfluence.constraintsToApply.length > 0 && (
+            <div className="mb-3">
+              <div className="text-sm font-medium mb-1">Model-driven constraints</div>
+              <ul className="list-disc ml-6 text-gray-800">
+                {drill.modelInfluence.constraintsToApply.map((c: string, i: number) => <li key={i}>{c}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {Array.isArray(drill.modelInfluence.coachingLanguage) && drill.modelInfluence.coachingLanguage.length > 0 && (
+            <div className="mb-1">
+              <div className="text-sm font-medium mb-1">Coaching language</div>
+              <div className="flex flex-wrap gap-2">
+                {drill.modelInfluence.coachingLanguage.map((w: string, i: number) => (
+                  <span key={i} className="text-xs px-2 py-1 rounded-full border">{w}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      
+      {/* --- Model influence (from game model) --- */}
+      {drill?.modelInfluence && (
+        <section className="mt-10">
+          <h2 className="font-semibold mb-3">Model influence</h2>
+          <div className="text-sm text-gray-600 mb-2">
+            Model: <span className="font-medium text-gray-800">{drill.modelInfluence.modelName}</span>
+          </div>
+
+          {Array.isArray(drill.modelInfluence.principlesApplied) && drill.modelInfluence.principlesApplied.length > 0 && (
+            <div className="mb-4">
+              <div className="font-medium mb-1">Principles applied</div>
+              <div className="flex flex-wrap gap-2">
+                {drill.modelInfluence.principlesApplied.map((p: string, i: number) => (
+                  <span key={i} className="text-xs px-2 py-1 rounded-full border">{p}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {Array.isArray(drill.modelInfluence.tacticalCues) && drill.modelInfluence.tacticalCues.length > 0 && (
+            <div className="mb-4">
+              <div className="font-medium mb-1">Tactical cues</div>
+              <ul className="list-disc ml-6">
+                {drill.modelInfluence.tacticalCues.map((c: string, i: number) => <li key={i}>{c}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {drill.modelInfluence.unitFocus && (
+            <div className="mb-2"><span className="font-medium">Unit focus:</span> {drill.modelInfluence.unitFocus}</div>
+          )}
+          {drill.modelInfluence.intensityProfile && (
+            <div className="mb-2"><span className="font-medium">Intensity:</span> {drill.modelInfluence.intensityProfile}</div>
+          )}
+          {drill.modelInfluence.scoringBias && (
+            <div className="mb-2"><span className="font-medium">Scoring bias:</span> {drill.modelInfluence.scoringBias}</div>
+          )}
+
+          {Array.isArray(drill.modelInfluence.constraintsToApply) && drill.modelInfluence.constraintsToApply.length > 0 && (
+            <div className="mb-4">
+              <div className="font-medium mb-1">Suggested constraints</div>
+              <ul className="list-disc ml-6">
+                {drill.modelInfluence.constraintsToApply.map((c: string, i: number) => <li key={i}>{c}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {Array.isArray(drill.modelInfluence.coachingLanguage) && drill.modelInfluence.coachingLanguage.length > 0 && (
+            <div className="mb-2">
+              <div className="font-medium mb-1">Coaching language</div>
+              <div className="flex flex-wrap gap-2">
+                {drill.modelInfluence.coachingLanguage.map((w: string, i: number) => (
+                  <span key={i} className="text-xs px-2 py-1 rounded-full border">{w}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+
+      {!drill && (
+        <p className="mt-8 italic text-gray-500">No additional drill details were saved for this segment.</p>
+      )}
+    </main>
+  );
+}

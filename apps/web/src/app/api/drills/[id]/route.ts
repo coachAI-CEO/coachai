@@ -1,30 +1,17 @@
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from "next/server";
+import { getDrill } from "@/lib/drills/drillStore";
 
-export async function GET(req: Request, ctx: { params?: { id?: string } }) {
-  // Debug to verify what Next passes
-  console.log('DRILLS [id] ctx.params =', ctx?.params, 'url=', req.url);
-
-  // Fallback: extract id from the URL path if params are missing
+// Next 16: params is a Promise in route handlers
+export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const { id } = await ctx.params;
   const url = new URL(req.url);
-  const parts = url.pathname.split('/').filter(Boolean);
-  const last = parts[parts.length - 1];
-  const idFromPath = last ? decodeURIComponent(last) : undefined;
+  const last = url.pathname.split("/").filter(Boolean).pop();
+  const slug = id || last;
 
-  const id = ctx?.params?.id ?? idFromPath;
-
-  if (!id) {
-    return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+  if (!slug) {
+    return NextResponse.json({ error: "Missing id" }, { status: 400 });
   }
 
-  try {
-    const drill = await prisma.drill.findUnique({ where: { id } });
-    if (!drill) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    }
-    return NextResponse.json({ drill });
-  } catch (e) {
-    console.error('GET /api/drills/[id] error:', e);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
-  }
+  const drill = await getDrill(slug);
+  return NextResponse.json({ drill, id: slug });
 }

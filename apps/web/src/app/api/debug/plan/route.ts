@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generatePlan } from "@/lib/ai/generatePlan";
+import { generatePlan } from "@/lib/ai/drillPlan";
 export const dynamic = "force-dynamic";
 export async function GET() {
   try {

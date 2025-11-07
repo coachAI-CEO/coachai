@@ -1,3 +1,4 @@
+'use client';
 // apps/web/src/app/coach/plan/page.tsx
 'use client'
 import { useState } from 'react'
@@ -39,6 +40,14 @@ export default function PlanPage() {
         >
           {loading ? 'Building…' : 'Build plan (U8–U10, Defending – D3)'}
         </button>
+      <button
+        className="ml-3 inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-white disabled:opacity-50"
+        onClick={() => saveSessionToVault((plan as any))}
+        disabled={typeof plan === "undefined" || !plan || saving}
+      >
+        {saving ? "Saving…" : "Save Session to Vault"}
+      </button>
+      {saveMsg ? <p className="mt-2 text-sm text-gray-600">{saveMsg}</p> : null}
       </form>
 
       {resp?.plan && (

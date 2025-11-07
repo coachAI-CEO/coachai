@@ -1,0 +1,527 @@
+'use client';
+
+import * as React from "react";
+
+/* -------------------------------------------------------------------------- */
+/* Types                                                                      */
+/* -------------------------------------------------------------------------- */
+
+type DrillLike = {
+  phase?: string;
+  zone?: string;
+  age?: string;
+  goalsAvailable?: number;
+  playersAvailable?: number;
+
+  // Optional, if your API ever sets them:
+  totalPlayers?: number;
+  numPlayers?: number;
+
+  // For parsing counts from text:
+  organization?: string;
+  setup?: string;
+};
+
+type Marker = { id: string; x: number; y: number; team?: "A" | "D" | "G" | "N" };
+type Arrow  = { from: [number, number]; to: [number, number]; style: "pass" | "run" };
+type Cone   = { x: number; y: number };
+type Ball   = { x: number; y: number };
+
+/* -------------------------------------------------------------------------- */
+/* Parsing helpers (counts & shapes)                                          */
+/* -------------------------------------------------------------------------- */
+
+function parsePlayersUnique2(text: string){
+  const s = String(text||"").toLowerCase();
+
+  // Simple 8v6(+1)
+  const mV = /(?:^|\b)(\d+)\s*v\s*(\d+)(?:\s*\+\s*(\d+))?/.exec(s);
+  // Formations like 4-3-3 vs 4-4-2
+  const mForm = /\b(\d+(?:-\d+)+)\s*(?:v|vs)\s*(\d+(?:-\d+)+)\b/.exec(s);
+
+  const sumShape = (shape?: string) =>
+    shape ? shape.split('-').map(n => parseInt(n,10)||0).reduce((a,b)=>a+b,0) : 0;
+
+  let attackers=0, defenders=0, neutrals=0, pretty="";
+
+  if (mV) {
+    attackers = +mV[1]; defenders = +mV[2]; neutrals = mV[3] ? +mV[3] : 0;
+    pretty = `${attackers}v${defenders}${neutrals ? `+${neutrals}` : ""}`;
+  } else if (mForm) {
+    attackers = sumShape(mForm[1]); defenders = sumShape(mForm[2]);
+    pretty = `${mForm[1]} vs ${mForm[2]}`;
+  } else {
+    // Fallback heuristics
+    const nxn = /(\d+)\s*v\s*(\d+)/.exec(s);
+    if (nxn){ attackers = +nxn[1]; defenders = +nxn[2]; }
+    const mN = /(?:\+|plus|with)\s*(\d+)\s*(?:neutral|joker|floater)s?/.exec(s);
+    if (mN) neutrals = +mN[1];
+    if (attackers || defenders || neutrals) {
+      pretty = `${attackers||0}v${defenders||0}${neutrals ? `+${neutrals}` : ""}`;
+    }
+  }
+
+  const total = attackers + defenders + neutrals;
+  return { attackers, defenders, neutrals, total, pretty };
+}
+
+function parsePlayersFromOrganization(org?: string): number | undefined {
+  if (!org) return;
+  const s = org.toLowerCase();
+
+  const mPlayers = s.match(/(\d+)\s*players?/); // "13 players"
+  const mV       = s.match(/(\d+)\s*v\s*(\d+)(?:\s*\+?\s*(\d+))?/); // "7v7+1"
+  const mNeutral = s.match(/(?:\+|plus|with)\s*(\d+)\s*(?:neutral|joker|floater)s?/);
+
+  let total: number | undefined;
+  if (mV) {
+    const a = parseInt(mV[1],10), d = parseInt(mV[2],10);
+    const extra = mV[3] ? parseInt(mV[3],10) : 0;
+    total = a + d + extra;
+  }
+  if (!total && mPlayers) total = parseInt(mPlayers[1],10);
+  if (mNeutral) total = (total ?? 0) + parseInt(mNeutral[1],10);
+
+  return total && total > 0 ? total : undefined;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Simple layout utilities                                                     */
+/* -------------------------------------------------------------------------- */
+
+function buildEvenLine(count: number, role: 'ATT'|'DEF'){
+  const y = role === 'DEF' ? 0.28 : 0.62; // DEF near top; ATT nearer midfield
+  const out: {x:number;y:number}[] = [];
+  if (count <= 0) return out;
+  for (let i=0;i<count;i++){
+    const x = (i+1)/(count+1);
+    out.push({x,y});
+  }
+  return out;
+}
+
+type Band = [number, number]; // normalized y range
+
+function parseBandCounts(shape: string): number[] {
+  const bands = String(shape||'').trim().split('-').map(n => parseInt(n,10)||0);
+  if (bands.length === 0) return [0,0,0];
+  if (bands.length === 1) return [bands[0],0,0];
+  if (bands.length === 2) return [bands[0], bands[1], 0];
+  return [bands[0], bands[1], bands.slice(2).reduce((a,b)=>a+b,0)];
+}
+
+function lineAcross(n: number, y: number): Array<{x:number;y:number}> {
+  if (n <= 0) return [];
+  if (n === 1) return [{x:0.50,y}];
+  const out = [];
+  for (let i=0;i<n;i++){
+    const x = (i+1)/(n+1);
+    out.push({x, y});
+  }
+  return out;
+}
+
+function buildPositionsFromShape(shape: string, role: 'ATT'|'DEF'): Array<{x:number;y:number}> {
+  const [back, mid, front] = parseBandCounts(shape);
+  if (role === 'DEF') {
+    return [
+      ...lineAcross(back,  0.10),
+      ...lineAcross(mid,   0.22),
+      ...lineAcross(front, 0.34),
+    ];
+  }
+  return [
+    ...lineAcross(back,  0.42),
+    ...lineAcross(mid,   0.56),
+    ...lineAcross(front, 0.70),
+  ];
+}
+
+function splitPrettyVs(pretty?: string): {att?: string, def?: string} {
+  const p = String(pretty||'');
+  const m = p.match(/([0-9-]+)\s*(?:v|vs)\s*([0-9-]+)/i);
+  if (!m) return {};
+  return { att: m[1], def: m[2] };
+}
+
+/* -------------------------------------------------------------------------- */
+/* Baseline scene (cones/balls/arrows, shading)                                */
+/* -------------------------------------------------------------------------- */
+
+function useLayout(drill: DrillLike){
+  const phase = (drill.phase ?? "ATTACKING").toUpperCase();
+  const zone  = (drill.zone  ?? "MIDDLE_THIRD").toUpperCase();
+
+  let attackers: Marker[] = [];
+  let defenders: Marker[] = [];
+  let gks: Marker[] = [];
+  let cones: Cone[] = [];
+  let balls: Ball[] = [];
+  let arrows: Arrow[] = [];
+  let shadeTop = false, shadeMid = false, shadeBot = false;
+
+  if (zone.includes("ATTACKING")) shadeTop = true;
+  if (zone.includes("MIDDLE"))    shadeMid = true;
+  if (zone.includes("DEFENSIVE")) shadeBot = true;
+
+  if (phase === "ATTACKING" && zone.includes("ATTACKING")) {
+    // Attacking in the attacking third
+    attackers = [
+      {id:"A2", x:0.18, y:0.28, team:"A"},
+      {id:"A3", x:0.50, y:0.28, team:"A"},
+      {id:"A4", x:0.82, y:0.28, team:"A"},
+      {id:"A5", x:0.33, y:0.42, team:"A"},
+      {id:"A6", x:0.67, y:0.42, team:"A"},
+    ];
+    gks = [{id:"G1", x:0.50, y:0.08, team:"G"}];
+    defenders = [
+      {id:"D1", x:0.28, y:0.20, team:"D"},
+      {id:"D2", x:0.45, y:0.20, team:"D"},
+      {id:"D3", x:0.55, y:0.20, team:"D"},
+      {id:"D4", x:0.72, y:0.20, team:"D"},
+    ];
+    balls = [{x:0.95, y:0.15},{x:0.95,y:0.18},{x:0.95,y:0.21}];
+    cones = [{x:0.15,y:0.16},{x:0.85,y:0.16},{x:0.15,y:0.34},{x:0.85,y:0.34}];
+    arrows = [
+      {from:[0.55,0.20], to:[0.82,0.28], style:"pass"},
+      {from:[0.82,0.28], to:[0.50,0.28], style:"pass"},
+      {from:[0.50,0.42], to:[0.55,0.28], style:"run"},
+      {from:[0.33,0.42], to:[0.45,0.28], style:"run"},
+    ];
+  } else if (phase === "DEFENDING" && zone.includes("ATTACKING")) {
+    // Defending deep in the attacking third (delay / compact block)
+    defenders = [
+      {id:"D1", x:0.32, y:0.22, team:"D"},
+      {id:"D2", x:0.44, y:0.22, team:"D"},
+      {id:"D3", x:0.56, y:0.22, team:"D"},
+      {id:"D4", x:0.68, y:0.22, team:"D"},
+      {id:"D5", x:0.50, y:0.30, team:"D"},
+    ];
+    attackers = [
+      {id:"A1", x:0.22, y:0.42, team:"A"},
+      {id:"A2", x:0.78, y:0.42, team:"A"},
+      {id:"A3", x:0.36, y:0.52, team:"A"},
+      {id:"A4", x:0.64, y:0.52, team:"A"},
+      {id:"A5", x:0.50, y:0.60, team:"A"},
+    ];
+    balls = [{x:0.06,y:0.16},{x:0.94,y:0.16}];
+    cones = [{x:0.14,y:0.36},{x:0.86,y:0.36}];
+    arrows = [
+      {from:[0.36,0.52], to:[0.28,0.46], style:"run"},
+      {from:[0.64,0.52], to:[0.72,0.46], style:"run"},
+      {from:[0.50,0.60], to:[0.64,0.52], style:"pass"},
+    ];
+    shadeTop = true;
+    gks = [{id:"G1", x:0.50, y:0.08, team:"G"}];
+  } else if (phase === "DEFENDING" && zone.includes("DEFENSIVE")) {
+    // Defending in the defensive third
+    gks = [{id:"G1", x:0.50, y:0.92, team:"G"}];
+    defenders = [
+      {id:"D1", x:0.28, y:0.82, team:"D"},
+      {id:"D2", x:0.42, y:0.82, team:"D"},
+      {id:"D3", x:0.58, y:0.82, team:"D"},
+      {id:"D4", x:0.72, y:0.82, team:"D"},
+      {id:"D5", x:0.50, y:0.74, team:"D"},
+      {id:"D6", x:0.37, y:0.74, team:"D"},
+    ];
+    attackers = [
+      {id:"A1", x:0.18, y:0.60, team:"A"},
+      {id:"A2", x:0.82, y:0.60, team:"A"},
+      {id:"A3", x:0.50, y:0.52, team:"A"},
+    ];
+    balls = [{x:0.05,y:0.90},{x:0.08,y:0.90}];
+    cones = [{x:0.20,y:0.70},{x:0.80,y:0.70},{x:0.20,y:0.88},{x:0.80,y:0.88}];
+    arrows = [
+      {from:[0.42,0.82], to:[0.40,0.86], style:"run"},
+      {from:[0.58,0.82], to:[0.60,0.86], style:"run"},
+      {from:[0.37,0.74], to:[0.18,0.60], style:"pass"},
+    ];
+  } else {
+    // Generic middle-third example
+    attackers = [
+      {id:"A1", x:0.25, y:0.60, team:"A"},
+      {id:"A2", x:0.50, y:0.60, team:"A"},
+      {id:"A3", x:0.75, y:0.60, team:"A"},
+      {id:"A4", x:0.35, y:0.45, team:"A"},
+      {id:"A5", x:0.65, y:0.45, team:"A"},
+      {id:"A6", x:0.50, y:0.30, team:"A"},
+    ];
+    defenders = [
+      {id:"D1", x:0.30, y:0.52, team:"D"},
+      {id:"D2", x:0.70, y:0.52, team:"D"},
+      {id:"D3", x:0.40, y:0.38, team:"D"},
+      {id:"D4", x:0.60, y:0.38, team:"D"},
+    ];
+    balls = [{x:0.06,y:0.50}];
+    cones = [{x:0.10,y:0.40},{x:0.90,y:0.40}];
+    arrows = [
+      {from:[0.25,0.60], to:[0.50,0.45], style:"pass"},
+      {from:[0.50,0.45], to:[0.65,0.30], style:"pass"},
+      {from:[0.35,0.45], to:[0.45,0.38], style:"run"},
+    ];
+  }
+
+  return { attackers, defenders, gks, cones, balls, arrows, shadeTop, shadeMid, shadeBot };
+}
+
+/* -------------------------------------------------------------------------- */
+/* SVG helpers                                                                 */
+/* -------------------------------------------------------------------------- */
+
+const Dash = ({d}:{d:string}) => (
+  <path d={d} stroke="#0f172a" strokeWidth={2} strokeDasharray="6 6" fill="none" opacity={0.7}/>
+);
+
+function PitchFrame({w, h}:{w:number; h:number}){
+  const r = 16;
+  return (
+    <>
+      <rect x={0} y={0} width={w} height={h} rx={r} ry={r} fill="#fff" stroke="#0f172a" strokeWidth={3}/>
+      <rect x={6} y={6} width={w-12} height={h-12} rx={r-6} ry={r-6} fill="none" stroke="#0f172a" opacity={0.15}/>
+    </>
+  );
+}
+
+function ThirdShade({w,h,band}:{w:number;h:number;band:"top"|"mid"|"bot"}){
+  const y = band==="top" ? 12 : band==="mid" ? h*0.33 : h*0.67;
+  const hh = band==="mid" ? h*0.34-12 : h*0.33-12;
+  return <rect x={12} y={y} width={w-24} height={hh} rx={12} ry={12} fill="#0f172a" opacity={0.06} stroke="#0f172a" strokeDasharray="6 6" />;
+}
+
+function FullPitchLines({w,h}:{w:number;h:number}){
+  const c = w/2;
+  const boxW = w*0.44, boxH = h*0.22, sixW = w*0.22, sixH = h*0.11;
+  return (
+    <>
+      <line x1={0} y1={h/2} x2={w} y2={h/2} stroke="#e5e7eb" strokeWidth={2}/>
+      <line x1={0} y1={h*0.33} x2={w} y2={h*0.33} stroke="#e5e7eb" strokeWidth={2}/>
+      <line x1={0} y1={h*0.67} x2={w} y2={h*0.67} stroke="#e5e7eb" strokeWidth={2}/>
+      <circle cx={c} cy={h/2} r={h*0.08} stroke="#93a3b8" fill="none" strokeWidth={2}/>
+      <circle cx={c} cy={h/2} r={2.5} fill="#0f172a"/>
+      <rect x={c-boxW/2} y={0} width={boxW} height={boxH} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+      <rect x={c-sixW/2} y={0} width={sixW} height={sixH} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+      <path d={`M ${c-h*0.12},${boxH} A ${h*0.12},${h*0.12} 0 0 0 ${c+h*0.12},${boxH}`} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+      <rect x={c-boxW/2} y={h-boxH} width={boxW} height={boxH} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+      <rect x={c-sixW/2} y={h-sixH} width={sixW} height={sixH} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+      <path d={`M ${c-h*0.12},${h-boxH} A ${h*0.12},${h*0.12} 0 0 1 ${c+h*0.12},${h-boxH}`} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+      <rect x={c-w*0.18/2} y={-h*0.07+2} width={w*0.18} height={h*0.07} fill="#fff" stroke="#0f172a" strokeWidth={2}/>
+      <rect x={c-w*0.18/2} y={h-2} width={w*0.18} height={h*0.07} fill="#fff" stroke="#0f172a" strokeWidth={2}/>
+      <Dash d={`M ${c},${12} L ${c},${h-12}`} />
+    </>
+  );
+}
+
+function HalfPitchLines({w,h,side}:{w:number;h:number;side:"top"|"bottom"}){
+  const c = w/2;
+  const boxW = w*0.44, boxH = h*0.44, sixW = w*0.22, sixH = h*0.22;
+  const arcR = h*0.20;
+
+  if (side === "top"){
+    return (
+      <>
+        <line x1={0} y1={h-2} x2={w} y2={h-2} stroke="#e5e7eb" strokeWidth={2}/>
+        <path d={`M ${c-arcR},${h} A ${arcR},${arcR} 0 0 1 ${c+arcR},${h}`} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+        <rect x={c-boxW/2} y={0} width={boxW} height={boxH*0.5} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+        <rect x={c-sixW/2} y={0} width={sixW} height={sixH*0.5} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+        <path d={`M ${c-arcR*0.7},${boxH*0.5} A ${arcR*0.7},${arcR*0.7} 0 0 0 ${c+arcR*0.7},${boxH*0.5}`} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+        <rect x={c-w*0.18/2} y={-h*0.10+2} width={w*0.18} height={h*0.10} fill="#fff" stroke="#0f172a" strokeWidth={2}/>
+        <Dash d={`M ${c},${12} L ${c},${h-12}`} />
+      </>
+    );
+  }
+  return (
+    <>
+      <line x1={0} y1={2} x2={w} y2={2} stroke="#e5e7eb" strokeWidth={2}/>
+      <path d={`M ${c-arcR},0 A ${arcR},${arcR} 0 0 0 ${c+arcR},0`} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+      <rect x={c-boxW/2} y={h-(boxH*0.5)} width={boxW} height={boxH*0.5} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+      <rect x={c-sixW/2} y={h-(sixH*0.5)} width={sixW} height={sixH*0.5} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+      <path d={`M ${c-arcR*0.7},${h-(boxH*0.5)} A ${arcR*0.7},${arcR*0.7} 0 0 1 ${c+arcR*0.7},${h-(boxH*0.5)}`} fill="none" stroke="#93a3b8" strokeWidth={2}/>
+      <rect x={c-w*0.18/2} y={h-2} width={w*0.18} height={h*0.10} fill="#fff" stroke="#0f172a" strokeWidth={2}/>
+      <Dash d={`M ${c},${12} L ${c},${h-12}`} />
+    </>
+  );
+}
+
+function ConeShape({x,y}:{x:number;y:number}){ return <circle cx={x} cy={y} r={5} fill="#fb923c" stroke="#0f172a" strokeWidth={1}/>; }
+function BallDot({x,y}:{x:number;y:number}){ return <circle cx={x} cy={y} r={4} fill="#111827"/>; }
+
+function Player({m, scale}:{m:Marker; scale:number}){
+  const R = 16*scale;
+  const fill = m.team==="D" ? "#ef4444" : m.team==="G" ? "#22c55e" : m.team==="N" ? "#9ca3af" : "#f59e0b";
+  return (
+    <g transform={`translate(${m.x} ${m.y})`}>
+      <circle r={R} fill={fill} stroke="#0f172a" strokeWidth={2}/>
+      <text textAnchor="middle" dominantBaseline="middle" fontSize={12*scale} fontWeight={700} fill="#0f172a">
+        {m.team==="N" ? "N" : m.id.replace(/[ADG]/,'')}
+      </text>
+    </g>
+  );
+}
+
+function ArrowPath({from,to,kind,scale}:{from:[number,number];to:[number,number];kind:"pass"|"run";scale:number}){
+  const [x1,y1]=from,[x2,y2]=to;
+  const dx=x2-x1, dy=y2-y1, len=Math.hypot(dx,dy)||1;
+  const ux=dx/len, uy=dy/len;
+  const head=8*scale;
+  const hx=x2-ux*head, hy=y2-uy*head;
+  const dash = kind==="pass" ? "6 6" : "2 4";
+  return (
+    <>
+      <line x1={x1} y1={y1} x2={hx} y2={hy} stroke="#0f172a" strokeWidth={2} strokeDasharray={dash}/>
+      <polygon points={`${x2},${y2} ${hx-uy*4},${hy+ux*4} ${hx+uy*4},${hy-ux*4}`} fill="#0f172a"/>
+    </>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Main component                                                              */
+/* -------------------------------------------------------------------------- */
+
+export default function AutoDrillDiagram({drill}:{drill: DrillLike}){
+  const _est = parsePlayersUnique2(String((drill as any)?.organization || (drill as any)?.setup || ""));
+  const shapeLabel = _est.pretty;
+
+  const base = useLayout(drill);
+
+  // Half vs full pitch
+  const goals = drill.goalsAvailable ?? 0;
+  const zone  = (drill.zone ?? "").toUpperCase();
+  const useHalf = goals === 1;
+  const halfSide: "top"|"bottom" =
+    zone.includes("DEFENSIVE") ? "bottom" :
+    zone.includes("ATTACKING") ? "top" : "top";
+
+  // SVG viewport & mapping
+  const PAD = 24;
+  const W = 920, H = useHalf ? 420 : 600;
+  const inner = { x: PAD, y: PAD, w: W-2*PAD, h: H-2*PAD };
+  const clamp01 = (v:number)=>Math.max(0,Math.min(1,v));
+  const mapX = (u:number)=> inner.x + clamp01(u)*inner.w;
+  const mapY = (v:number)=> {
+    const y = clamp01(v);
+    if (!useHalf) return inner.y + y*inner.h;
+    if (halfSide === "top") {
+      const t = Math.min(y, 0.5) / 0.5;
+      return inner.y + t*inner.h;
+    } else {
+      const t = Math.max(y, 0.5);
+      const norm = (t - 0.5) / 0.5;
+      return inner.y + norm*inner.h;
+    }
+  };
+  const scale = inner.w/920;
+
+  // Count used by baseline scene
+  const usedFromBase = base.gks.length + base.attackers.length + base.defenders.length;
+
+  // Desired total (UI input > parsed org > fallback)
+  const desired = (Number((drill as any).playersAvailable) || 0)
+  || (parsePlayersFromOrganization((drill as any).organization) ?? 0)
+  || (_est.total || 0)
+  || usedFromBase;
+
+  /* ------------------------- Build markers (cap-aware) ------------------------- */
+
+  const markers: Marker[] = [];
+  const BUDGET = Math.max(0, desired);
+
+  const pushCapped = <T,>(items: T[], toMarker: (it: T, i: number) => Marker) => {
+    for (let i = 0; i < items.length && markers.length < BUDGET; i++) {
+      markers.push(toMarker(items[i], i));
+    }
+  };
+
+  // GK: use base if present; else add one centrally near the goal line
+  if (base.gks.length > 0) {
+    pushCapped(base.gks, (g,i)=>({ id: ("G"+String(i+1)), x:g.x, y:g.y, team:'G' }));
+  } else {
+    pushCapped([{x:0.5,y:0.16}] as any, (g:any,i)=>({ id: ("G"+String(i+1)), x:g.x, y:g.y, team:'G' }));
+  }
+
+  // If we parsed a shape (e.g., "3-3-1 vs 4-3-2"), prefer that; else fall back to base/even line
+  const { att: shapeAtt, def: shapeDef } = splitPrettyVs(shapeLabel);
+  const defBand = shapeDef ? buildPositionsFromShape(shapeDef, 'DEF')
+                           : (_est.defenders ? buildEvenLine(_est.defenders, 'DEF') : base.defenders.map(d=>({x:d.x,y:d.y})));
+  const attBand = shapeAtt ? buildPositionsFromShape(shapeAtt, 'ATT')
+                           : (_est.attackers ? buildEvenLine(_est.attackers, 'ATT') : base.attackers.map(a=>({x:a.x,y:a.y})));
+
+  pushCapped(defBand, (p,i)=>({ id: ("D"+String(i+1)), x:p.x, y:p.y, team:'D' }));
+  pushCapped(attBand, (p,i)=>({ id: ("A"+String(i+1)), x:p.x, y:p.y, team:'A' }));
+
+  // 1.5) Neutrals from parsed text (center band)
+  const neutralCount = _est.neutrals || 0;
+  if (neutralCount > 0) {
+    for (let i=0; i<neutralCount && markers.length < BUDGET; i++){
+      const spread = (i - (neutralCount-1)/2) * 0.04; // ±0.08 for up to ~5 neutrals
+      const yCenter = useHalf ? (halfSide==='top' ? 0.35 : 0.65) : 0.50;
+      markers.push({ id: ("N" + String(i+1)), x: 0.50 + spread, y: yCenter, team:'N' });
+    }
+  }
+
+  // 2) Fill to desired count: neutrals on right touchline, nicely spaced
+  if (markers.length < BUDGET) {
+    const needed = BUDGET - markers.length;
+    for (let i = 0; i < needed; i++) {
+      const yPos = (i + 1) / (needed + 1);
+      const uY = useHalf
+        ? (halfSide === 'top' ? yPos * 0.45 + 0.05 : 0.50 + yPos * 0.45)
+        : yPos * 0.8 + 0.10;
+      markers.push({ id: ("N" + String(i+1 + neutralCount)), x: 0.97, y: uY, team: 'N' });
+    }
+  }
+
+  const playersUsed = markers.length;
+
+  /* --------------------------------- Render ---------------------------------- */
+
+  return (
+    <div>
+      <div className="rounded-2xl border border-slate-900/80 p-2">
+        <svg width="100%" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="auto-generated drill diagram">
+          <PitchFrame w={W} h={H}/>
+          <clipPath id="clip-pitch"><rect x={0} y={0} width={W} height={H} rx={16} ry={16}/></clipPath>
+
+          <g clipPath="url(#clip-pitch)">
+            {!useHalf && base.shadeTop && <g transform={`translate(${inner.x} ${inner.y})`}><ThirdShade w={inner.w} h={inner.h} band="top"/></g>}
+            {!useHalf && base.shadeMid && <g transform={`translate(${inner.x} ${inner.y})`}><ThirdShade w={inner.w} h={inner.h} band="mid"/></g>}
+            {!useHalf && base.shadeBot && <g transform={`translate(${inner.x} ${inner.y})`}><ThirdShade w={inner.w} h={inner.h} band="bot"/></g>}
+            {useHalf && (
+              <rect x={inner.x+8} y={inner.y+8} width={inner.w-16} height={inner.h-16}
+                    rx={12} ry={12} fill="#0f172a" opacity={0.06} stroke="#0f172a" strokeDasharray="6 6"/>
+            )}
+
+            <g transform={`translate(${inner.x} ${inner.y})`}>
+              {useHalf ? <HalfPitchLines w={inner.w} h={inner.h} side={halfSide}/> : <FullPitchLines w={inner.w} h={inner.h}/>}
+            </g>
+
+            {/* cones & balls from baseline scene */}
+            <g>
+              {base.cones.map((c,i)=>(<ConeShape key={`c${i}`} x={mapX(c.x)} y={mapY(c.y)}/>))}
+              {base.balls.map((b,i)=>(<BallDot key={`b${i}`} x={mapX(b.x)} y={mapY(b.y)}/>))}
+            </g>
+
+            {/* arrows (baseline) */}
+            <g>
+              {base.arrows.map((a,i)=>(
+                <ArrowPath key={`ar${i}`} from={[mapX(a.from[0]), mapY(a.from[1])]} to={[mapX(a.to[0]), mapY(a.to[1])]} kind={a.style} scale={scale}/>
+              ))}
+            </g>
+
+            {/* players */}
+            <g>
+              {markers.map((m)=> <Player key={m.id} m={{...m, x:mapX(m.x), y:mapY(m.y)}} scale={scale} />)}
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      {/* Legend */}
+      <div className="mt-2 text-xs">
+        <span className={`inline-flex items-center gap-2 rounded-md px-2 py-1 border ${playersUsed===desired ? 'border-emerald-300 text-emerald-700' : 'border-amber-300 text-amber-700'} bg-white`}>
+          <span className="inline-block h-2 w-2 rounded-full" style={{background: playersUsed===desired ? '#10b981' : '#f59e0b'}} />
+          Players used <strong className="mx-1">{playersUsed}</strong> / available <strong className="ml-1">{desired}</strong>{shapeLabel ? <span className="ml-1 opacity-70">({shapeLabel})</span> : null}
+        </span>
+      </div>
+    </div>
+  );
+}

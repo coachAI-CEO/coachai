@@ -1,37 +1,36 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 import { NextResponse } from "next/server";
 import { generateDrill } from "@/lib/ai/generateDrill";
 
-export const dynamic = "force-dynamic";
-
 export async function POST(req: Request) {
-  let body: any;
   try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-  }
+    const body = await req.json();
 
-  const { phase, zone, age, search, goalsAvailable = 0 } = body || {};
-  if (!phase || !zone || !age) {
-    return NextResponse.json(
-      { error: "Missing required fields: phase, zone, age" },
-      { status: 400 }
-    );
-  }
+    
+  const __playersAvailable = (typeof body?.playersAvailable === "number" && body.playersAvailable > 0)
+    ? Math.floor(body.playersAvailable)
+    : 10;
+const keywords =
+      Array.isArray(body.keywords) ? body.keywords :
+      (typeof body.search === "string"
+        ? body.search.split(",").map((s: string) => s.trim()).filter(Boolean)
+        : []);
 
-  try {
     const drill = await generateDrill({
-      phase,
-      zone,
-      age,
-      search,
-      goalsAvailable,
+      model: body.model || "COACHAI",
+      phase: body.phase,
+      zone: body.zone,
+      age: body.age,
+      playersAvailable: __playersAvailable,
+      goalsAvailable: Number(body.goalsAvailable ?? 0),
+      keywords,
     });
-    return NextResponse.json({ drill });
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: err?.message || "Failed to generate drill" },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ ok: true, drill, playersAvailable: __playersAvailable }, { headers: { "Cache-Control": "no-store, must-revalidate" } });
+  } catch (e: any) {
+    console.error("[api/ai/generate-drill] error:", e?.stack || e);
+    return NextResponse.json({ ok: false, error: e?.message || "failed" }, { status: 500 }, { headers: { "Cache-Control": "no-store, must-revalidate" } });
   }
 }

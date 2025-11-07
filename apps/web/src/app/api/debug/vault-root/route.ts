@@ -5,7 +5,7 @@ import fs from "node:fs/promises";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const ROOT = path.join(process.cwd(), "apps", "web", "data", "sessions");
+  const ROOT = path.join(process.cwd(), "data", "sessions");
   let files: string[] = [];
   let error: string | null = null;
   try {

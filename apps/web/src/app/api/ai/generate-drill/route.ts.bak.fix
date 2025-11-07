@@ -1,0 +1,20 @@
+import { NextResponse } from "next/server";
+import { generateDrill } from "@/lib/ai/generateDrill";
+
+export const dynamic = "force-dynamic";
+
+export async function POST(req: Request) {
+  const body = await req.json();
+  const keywords = Array.isArray(body.keywords) ? body.keywords
+    : (typeof body.search === 'string'
+        ? body.search.split(',').map(s => s.trim()).filter(Boolean)
+        : []);
+
+  try {
+    const body = await req.json();
+    const drill = await generateDrill(body);
+    return NextResponse.json({ drill, _raw: drill._raw ?? null });
+  } catch (e:any) {
+    return NextResponse.json({ error: e?.message || "failed" }, { status: 500 });
+  }
+}

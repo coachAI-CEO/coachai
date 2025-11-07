@@ -1,80 +1,110 @@
-export function generatePromptForDrill(input: {
-  phase: string; zone: string; age: string;
-  goalsAvailable?: number; search?: string;
-}) {
-  const search = input.search ? `Focus on: ${input.search}.` : "";
-  return `You are CoachAI. Produce a single soccer training drill as strict JSON.
-Fields:
-id,title,objective,phase,zone,ageBands[],categories[],durationMin,playersMin,playersMax,
-equipment,setup,constraints,progression,coachingPts[],tags[],diagram,nullable gkFocus,
-goalsAvailable,needGKFocus.
+// Minimal, safe prompt builders used by generatePlan.ts and generateDrill.ts.
+// Exports: generatePromptForPlan, generatePromptForDrill
 
-Constraints:
-- Age must include "${input.age}" in ageBands.
-- Phase="${input.phase}", Zone="${input.zone}", Goals=${input.goalsAvailable ?? 0}
-- ${search}
-Return ONLY JSON.`;
+type GM = {
+  id: string;
+  name: string;
+  philosophy?: string;
+  globalPrinciples?: string[];
+  ageProgression?: Record<string, string>;
+  segmentGuidelines?: Record<string, string>;
+};
+
+function asArray(v: any) {
+  return Array.isArray(v) ? v : (v == null ? [] : [v]);
+}
+function safe(v: any, fallback = ""): string {
+  if (v == null) return fallback;
+  try { return String(v); } catch { return fallback; }
+}
+function safeJoin(v: any, sep = ", "): string {
+  return asArray(v).map((x: any) => safe(x).trim()).filter(Boolean).join(sep);
 }
 
 export function generatePromptForPlan(input: {
-  phase: string; zone: string; age: string;
-  goalsAvailable: number;
-  principles: string[];
-  psychThemes: string[];
-  totalDurationMin: number;
-}) {
-  return `You are CoachAI. Create a session PLAN as strict JSON ONLY.
+  model: string;
+  phase: string;
+  zone: string;
+  age: string;
+  goalsAvailable?: number;
+  keywords?: string[];
+}, gm: GM) {
+  const mc = gm || { id: input.model, name: input.model };
 
-JSON schema:
-{
-  "rationale": string,
-  "totalDurationMin": number,
-  "segments": [
-    {
-      "title": string,
-      "durationMin": number,
-      "drill"?: { "id": string, "title": string, "objective"?: string },
-      "principleIds"?: string[],
-      "psychThemeIds"?: string[]
-    }
-  ]
+  const system = [
+    "You are CoachAI, an elite UEFA A-licensed youth coach.",
+    "Output must be STRICT JSON ONLY matching the schema the client expects.",
+    "Keep it realistic, age-appropriate, and actionable."
+  ].join("\n");
+
+  const user = [
+    "Create a complete training SESSION as JSON.",
+    "Required top-level fields:",
+    "- title (string)",
+    "- rationale (string)",
+    "- summary (string)",
+    "- totalDurationMin (number)",
+    "- phase (string), zone (string), age (string)",
+    "- segments (array of 3–6) where each segment has:",
+    "  title (string), durationMin (number), principleIds (string[]), psychThemeIds (string[]),",
+    "  drill { title, objective, setup, equipment[], coachingPoints[], technicalFocus[], psychFocus[],",
+    "         organization, progression[], modelInfluence { modelName, principlesApplied[], tacticalCues[],",
+    "         unitFocus, intensityProfile, scoringBias, constraintsToApply[], coachingLanguage[] } }",
+    "",
+    `Context: phase=${safe(input.phase)}, zone=${safe(input.zone)}, age=${safe(input.age)}, goalsAvailable=${safe(input.goalsAvailable ?? 0)}`,
+    `Keywords: ${safeJoin(input.keywords) || "none"}`,
+    "",
+    "Game Model",
+    `- ID: ${safe(mc.id)}`,
+    `- Name: ${safe(mc.name)}`,
+    `- Philosophy: ${safe(mc.philosophy, "n/a")}`,
+    `- Global principles: ${safeJoin(mc.globalPrinciples) || "n/a"}`,
+    "Return valid JSON only."
+  ].join("\n");
+
+  return { system, user };
 }
 
-Requirements:
-- Phase="${input.phase}", Zone="${input.zone}", Age="${input.age}", Goals=${input.goalsAvailable}
-- Target duration=${input.totalDurationMin} minutes (segments must sum to this total).
-- Emphasize principles: ${input.principles.join(", ")}.
-- Weave psych themes: ${input.psychThemes.join(", ")}.
-- Prefer 3–5 segments; include a warm-up and a game-like block.
-- Keep JSON compact; no markdown fences; no commentary.`;
-}
+export function generatePromptForDrill(input: {
+  model: string;
+  phase: string;
+  zone: string;
+  age: string;
+  goalsAvailable?: number;
+  keywords?: string[];
+}, gm: GM) {
+  const mc = gm || { id: input.model, name: input.model };
 
-export function generatePromptForReflection(input: {
-  session: import("@/types/session").SessionPlan
-}) {
-  const s = input.session;
-  const segs = s.segments
-    .map((x, i) => ` ${i + 1}. ${x.title} — ${x.durationMin}m${x.drill?.objective ? ` — ${x.drill.objective}` : ""}`)
-    .join("\n");
+  const system = [
+    "You are CoachAI, an elite UEFA A-licensed youth coach.",
+    "Output must be STRICT JSON ONLY for a single drill.",
+    "Keep it realistic, age-appropriate, and actionable."
+  ].join("\n");
 
-  return `
-You are a youth soccer coaching analyst. Create a concise, actionable post-session reflection in JSON ONLY, matching this schema:
-{
-  "summary": "string (3-5 sentences)",
-  "whatWentWell": ["bullet", "..."],
-  "toImproveNext": ["bullet", "..."],
-  "focusForNextSession": ["1-3 bullets"],
-  "psychNotes": ["optional bullets"]
-}
-Context:
-- Age: ${s.age}
-- Phase/Zone: ${s.phase} / ${s.zone}
-- Total duration: ${s.totalDurationMin} minutes
-- Principles: ${(s.principleIds || []).join(", ") || "n/a"}
-- Psych themes: ${(s.psychThemeIds || []).join(", ") || "n/a"}
-- Segments:
-${segs}
+  const user = [
+    "Create ONE training DRILL as JSON.",
+    "Required fields:",
+    "- title (string under 70 chars)",
+    "- objective (string)",
+    "- setup (string)",
+    "- equipment (string[])",
+    "- coachingPoints (string[])",
+    "- technicalFocus (string[])",
+    "- psychFocus (string[])",
+    "- organization (string)",
+    "- progression (string[])",
+    "- tags (string[]), gameModel (string)",
+    "",
+    `Context: phase=${safe(input.phase)}, zone=${safe(input.zone)}, age=${safe(input.age)}, goalsAvailable=${safe(input.goalsAvailable ?? 0)}`,
+    `Keywords: ${safeJoin(input.keywords) || "none"}`,
+    "",
+    "Game Model",
+    `- ID: ${safe(mc.id)}`,
+    `- Name: ${safe(mc.name)}`,
+    `- Philosophy: ${safe(mc.philosophy, "n/a")}`,
+    `- Global principles: ${safeJoin(mc.globalPrinciples) || "n/a"}`,
+    "Return valid JSON only."
+  ].join("\n");
 
-Return ONLY valid JSON with the exact keys above.
-`;
+  return { system, user };
 }
