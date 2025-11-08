@@ -157,7 +157,8 @@ export default function DrillGeneratorPage() {
   const [age, setAge] = useState("U12");
   const [goals, setGoals] = useState(1);
   const [focus, setFocus] = useState("");
-  const [keywords, setKeywords] = useState("");
+  const [coachingFocus, setCoachingFocus] = useState("");
+  const [keywords, setKeywords] = useState<string>("");
   const [model, setModel] = useState<GameModelId>(DEFAULT_GAME_MODEL_ID);
   const [playersAvailable, setPlayersAvailable] = useState<number>(12);
 
@@ -204,7 +205,7 @@ export default function DrillGeneratorPage() {
           zone,
           age,
           goalsAvailable: Number(goals),
-          keywords: keywords.split(",").map(s => s.trim()).filter(Boolean),
+          coachingFocus: coachingFocus.trim() || undefined,
           playersAvailable: Number(playersAvailable) || 0,
         }),
       });
@@ -229,9 +230,9 @@ export default function DrillGeneratorPage() {
             value={phase}
             onChange={(e) => setPhase(e.target.value)}
           >
-            <option>ATTACKING</option>
-            <option>DEFENDING</option>
-            <option>TRANSITION</option>
+            <option value="ATTACKING">{prettyLabel("ATTACKING")}</option>
+            <option value="DEFENDING">{prettyLabel("DEFENDING")}</option>
+            <option value="TRANSITION">{prettyLabel("TRANSITION")}</option>
           </select>
         </label>
 
@@ -242,41 +243,44 @@ export default function DrillGeneratorPage() {
             value={zone}
             onChange={(e) => setZone(e.target.value)}
           >
-            <option>DEFENSIVE_THIRD</option>
-            <option>MIDDLE_THIRD</option>
-            <option>ATTACKING_THIRD</option>
+            <option value="DEFENSIVE_THIRD">{prettyLabel("DEFENSIVE_THIRD")}</option>
+            <option value="MIDDLE_THIRD">{prettyLabel("MIDDLE_THIRD")}</option>
+            <option value="ATTACKING_THIRD">{prettyLabel("ATTACKING_THIRD")}</option>
           </select>
         </label>
 
-        <label className="block">
-          <div className="text-sm font-medium mb-1">Age</div>
-          <input
-            className="w-full border rounded-lg p-2"
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
-          />
-        </label>
+<label className="block">
+  <div className="text-sm font-medium mb-1">Age</div>
+  <select className="w-full border rounded-lg p-2" value={age} onChange={(e) => setAge(e.target.value)}>
+    {["U9","U10","U11","U12","U13","U14","U15","U16","U17","U18"].map(a => (
+      <option key={a} value={a}>{a}</option>
+    ))}
+  </select>
+</label>
 
-        <label className="block">
-          <div className="text-sm font-medium mb-1">Goals Available (0–2)</div>
-          <input
-            type="number"
-            min={0}
-            max={2}
-            className="w-full border rounded-lg p-2"
-            value={goals}
-            onChange={(e) => setGoals(Number(e.target.value))}
-          />
-        </label>
+<label className="block">
+  <div className="text-sm font-medium mb-1">Goals Available (0–2)</div>
+  <select
+    className="w-full border rounded-lg p-2"
+    value={String(goals)}
+    onChange={(e) => setGoals(Number(e.target.value))}
+  >
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+  </select>
+</label>
 
         <label className="md:col-span-2 block">
-          <div className="text-sm font-medium mb-1">Keywords (e.g., “compact, delay”)</div>
-          <input
-            className="w-full border rounded-lg p-2"
-            value={keywords}
-            onChange={(e) => setKeywords(e.target.value)}
-          />
-        </label>
+  <div className="text-sm font-medium mb-1">Coaching focus (optional)</div>
+  <input
+    className="w-full border rounded-lg p-2"
+    placeholder="e.g., create more chances by attacking wide areas; press on negative transition; build-up vs compact block"
+    value={coachingFocus}
+    onChange={(e)=>setCoachingFocus(e.target.value)}
+  />
+  <p className="mt-1 text-xs text-gray-500">This helps steer the AI toward your specific intention for the drill.</p>
+</label>
 
         <label className="block">
           <div className="text-sm font-medium mb-1">Players available</div>
